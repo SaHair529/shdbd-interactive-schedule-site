@@ -1,3 +1,10 @@
+.day-table {
+    flex-grow: 1;
+    min-height: 40vh;
+    background: rgba(245, 245, 245, 0.6);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 .day-paper {
     background-color: #4b6c81 !important;
     color: #fff !important;
@@ -16,7 +23,6 @@
 
     cursor: pointer;
     &:hover {
-        opacity: .6;
-        transition: opacity .5s;
+        background-color: rgba(255, 255, 255, 0.7);
     }
 }

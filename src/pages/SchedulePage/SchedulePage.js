@@ -65,7 +65,7 @@ const SchedulePage = ({scheduleId}) => {
             <Grid2 container spacing={2} sx={{width: '100%'}}>
                 {/* Заголовки дней */}
                 {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
-                    <Grid2 item xs={12} size={4} sx={{flexGrow: 1, minHeight: '40vh', background: 'rgba(245, 245, 245, 0.6)', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'}} key={dayNumber}>
+                    <Grid2 item xs={12} size={4} className='day-table' key={dayNumber}>
                         <Paper elevation={3} className='day-paper'>
                             <Typography >{dayNumbersNaming[dayNumber]}</Typography>
                         </Paper>
