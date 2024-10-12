@@ -56,14 +56,16 @@ const SchedulePage = ({scheduleId}) => {
 
     return (
         <Container maxWidth='xxl' sx={{
-            pt: 40,
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #3a8bd1, #ff8474)',
+            background: 'linear-gradient(135deg, #a1c9f1, #ffb3aa)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
         }} >
-            <Grid2 container spacing={1}>
+            <Grid2 container spacing={2} sx={{width: '100%'}}>
                 {/* Заголовки дней */}
                 {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
-                    <Grid2 item xs={12} sx={{flexGrow: 1}} key={dayNumber}>
+                    <Grid2 item xs={12} size={4} sx={{flexGrow: 1, minHeight: '40vh', background: 'rgba(245, 245, 245, 0.6)'}} key={dayNumber}>
                         <Paper elevation={3} className='day-paper'>
                             <Typography >{dayNumbersNaming[dayNumber]}</Typography>
                         </Paper>
