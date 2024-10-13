@@ -1,28 +1,23 @@
 .day-table {
     flex-grow: 1;
-    min-height: 40vh;
-    background: rgba(245, 245, 245, 0.6);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .day-paper {
-    background-color: #4b6c81 !important;
+    background-color: grey !important;
     color: #fff !important;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-bottom: 5px;
+    padding: 5px;
+    margin-bottom: 2px;
 }
 
 .subject-paper {
-    background-color: rgba(255, 255, 255, 0.8);
     text-align: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border-radius: 0 !important;
+    margin-bottom: 1px;
 
     cursor: pointer;
     &:hover {
-        background-color: rgba(255, 255, 255, 0.7);
+        opacity: .7;
     }
 }

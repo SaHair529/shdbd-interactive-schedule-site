@@ -59,9 +59,10 @@ const SchedulePage = ({scheduleId}) => {
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            bgcolor: 'background.default'
         }} >
-            <Grid2 container spacing={2} sx={{width: '100%'}}>
+            <Grid2 container spacing={2} sx={{width: '60%'}}>
                 {/* Заголовки дней */}
                 {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
                     <Grid2 item xs={12} size={4} className='day-table' key={dayNumber}>
