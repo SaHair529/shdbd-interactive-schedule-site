@@ -1,13 +1,16 @@
 import {useEffect, useState} from "react";
 import api from "../../api";
 import './SchedulePage.css'
+import WorkIcon from '@mui/icons-material/Work';
 import {
+    Box,
     CircularProgress,
     Container,
     Grid2,
     Paper,
     Typography
 } from "@mui/material";
+import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny} from "@mui/icons-material";
 
 
 const SchedulePage = ({scheduleId}) => {
@@ -15,6 +18,14 @@ const SchedulePage = ({scheduleId}) => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const dayNumbersNaming = ['','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресение'] // В начале пустая строка, чтобы у понедельника индекс был равен 1
+    const dayIcons = [null,
+        <AccessAlarm sx={{marginRight: 1}} />,
+        <WorkIcon sx={{marginRight: 1}} />,
+        <Equalizer sx={{marginRight: 1}} />,
+        <Assignment sx={{marginRight: 1}} />,
+        <PartyMode sx={{marginRight: 1}} />,
+        <BeachAccess sx={{marginRight: 1}} />,
+        <WbSunny sx={{marginRight: 1}} />]
 
     const fetchSchedule = async (id) => {
         try {
@@ -62,12 +73,15 @@ const SchedulePage = ({scheduleId}) => {
             justifyContent: 'center',
             bgcolor: 'background.default'
         }} >
-            <Grid2 container spacing={2} sx={{width: '60%'}}>
+            <Grid2 container spacing={1} sx={{width: '60%'}}>
                 {/* Заголовки дней */}
                 {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
                     <Grid2 item xs={12} size={4} className='day-table' key={dayNumber}>
                         <Paper elevation={3} className='day-paper'>
-                            <Typography >{dayNumbersNaming[dayNumber]}</Typography>
+                            <Box display="flex" alignItems="center">
+                                {dayIcons[dayNumber]}
+                                <Typography>{dayNumbersNaming[dayNumber]}</Typography>
+                            </Box>
                         </Paper>
                         {schedule.sortedScheduleItems[dayNumber].map(scheduleItem => (
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
