@@ -33,7 +33,7 @@ const LoginPage = ({ setToken }) => {
 
 
     return (
-        <Grid2 container className='page-container'>
+        <Grid2 container className='page-container' sx={{bgcolor: 'background.default'}}>
             <Paper elevation={10} className='login-tile' >
                 <Grid2 align='center'>
                     <Avatar style={{ backgroundColor: '#1bbd7e' }}><LockOutlinedIcon /></Avatar>
