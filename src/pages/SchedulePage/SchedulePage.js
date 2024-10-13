@@ -57,7 +57,6 @@ const SchedulePage = ({scheduleId}) => {
     return (
         <Container maxWidth='xxl' sx={{
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #a1c9f1, #ffb3aa)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
