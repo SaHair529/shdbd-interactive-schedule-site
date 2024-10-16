@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import { Grid2, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import './LoginPage.css'
+import React, {useState} from "react";
+import {Avatar, Button, Grid2, Link, Paper, TextField, Typography} from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import api from "../../api";
+import './RegisterPage.css'
 
-const LoginPage = ({ setToken }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+
+const RegisterPage = () => {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
+        event.preventDefault()
         try {
-            const response = await api.post('/login', {
+            const response = await api.post('/register', {
                 email: email,
                 password: password
             })
 
-            if (response.status === 200) {
-                // todo редиректить на другую страницу
-                alert('Успешно вошли')
+            if (response.status === 201) {
+                // todo редиректить в /login и писать зеленым об успешной регистрации
             }
+
         } catch (error) {
-            if (error.response.status === 401)
-                setErrorMessage(error.response.data.message)
+            if (error.response.status === 409)
+                setErrorMessage('Email уже зарегистрирован')
             else
                 setErrorMessage('An error occurred. Please try again.');
         }
-    };
-
+    }
 
     return (
         <Grid2 container className='page-container' sx={{bgcolor: 'background.default'}}>
-            <Paper elevation={10} className='login-tile' >
+            <Paper elevation={10} className='register-tile'>
                 <Grid2 align='center'>
-                    <Avatar style={{ backgroundColor: '#1bbd7e' }}><LockOutlinedIcon /></Avatar>
-                    <h2>Вход</h2>
+                    <Avatar style={{backgroundColor: '#1bbd7e'}}><LockOutlinedIcon/></Avatar>
+                    <h2>Регистрация</h2>
                 </Grid2>
                 {errorMessage && <Typography color="error">{errorMessage}</Typography>}
                 <form onSubmit={handleSubmit}>
@@ -56,19 +56,16 @@ const LoginPage = ({ setToken }) => {
                         required
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <Button type='submit' color='primary' variant="contained" style={{ margin: '8px 0' }} fullWidth>
-                        Войти
+                    <Button type='submit' color='primary' variant="contained" style={{margin: '8px 0'}} fullWidth>
+                        Зарегистрироваться
                     </Button>
                     <Typography>
-                        <Link href="#" >Забыли пароль?</Link>
-                    </Typography>
-                    <Typography>
-                        Нет аккаунта? <Link href="#">Зарегистрируйтесь</Link>
+                        Уже зарегистрированы? <Link href="#">Войдите</Link>
                     </Typography>
                 </form>
             </Paper>
         </Grid2>
-    );
-};
+    )
+}
 
-export default LoginPage;
+export default RegisterPage
