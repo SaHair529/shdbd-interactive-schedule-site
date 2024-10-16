@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Grid2, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './LoginPage.css'
+import api from "../../api";
 
 const LoginPage = ({ setToken }) => {
     const [email, setEmail] = useState('');
@@ -11,13 +12,10 @@ const LoginPage = ({ setToken }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://your-api-url/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await api.post('/login', {
+                email: email,
+                password: password
+            })
 
             if (response.ok) {
                 const data = await response.json();
@@ -27,7 +25,10 @@ const LoginPage = ({ setToken }) => {
                 setErrorMessage(errorData.error || 'Login failed');
             }
         } catch (error) {
-            setErrorMessage('An error occurred. Please try again.');
+            if (error.response.status === 401)
+                setErrorMessage(error.response.data.message)
+            else
+                setErrorMessage('An error occurred. Please try again.');
         }
     };
 
