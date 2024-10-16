@@ -63,7 +63,7 @@ const LoginPage = ({ setToken }) => {
                         <Link href="#" >Забыли пароль?</Link>
                     </Typography>
                     <Typography>
-                        Нет аккаунта? <Link href="#">Зарегистрируйтесь</Link>
+                        Нет аккаунта? <Link href="/register">Зарегистрируйтесь</Link>
                     </Typography>
                 </form>
             </Paper>

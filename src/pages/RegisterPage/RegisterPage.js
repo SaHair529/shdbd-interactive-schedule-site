@@ -3,12 +3,14 @@ import {Avatar, Button, Grid2, Link, Paper, TextField, Typography} from "@mui/ma
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import api from "../../api";
 import './RegisterPage.css'
+import {useNavigate} from "react-router-dom";
 
 
 const RegisterPage = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
+    const navigate = useNavigate()
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -19,7 +21,7 @@ const RegisterPage = () => {
             })
 
             if (response.status === 201) {
-                // todo редиректить в /login и писать зеленым об успешной регистрации
+                navigate('/login')
             }
 
         } catch (error) {
@@ -60,7 +62,7 @@ const RegisterPage = () => {
                         Зарегистрироваться
                     </Button>
                     <Typography>
-                        Уже зарегистрированы? <Link href="#">Войдите</Link>
+                        Уже зарегистрированы? <Link href="/login">Войдите</Link>
                     </Typography>
                 </form>
             </Paper>
