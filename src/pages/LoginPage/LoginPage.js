@@ -3,11 +3,14 @@ import { Grid2, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './LoginPage.css'
 import api from "../../api";
+import {useLocation} from "react-router-dom";
 
 const LoginPage = ({ setToken }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const location = useLocation()
+    const successMessage = location.state?.successMessage
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -38,6 +41,7 @@ const LoginPage = ({ setToken }) => {
                     <h2>Вход</h2>
                 </Grid2>
                 {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+                {successMessage && <Typography color="success">{successMessage}</Typography>}
                 <form onSubmit={handleSubmit}>
                     <TextField
                         label='Email'

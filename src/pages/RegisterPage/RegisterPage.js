@@ -21,7 +21,9 @@ const RegisterPage = () => {
             })
 
             if (response.status === 201) {
-                navigate('/login')
+                navigate('/login', {
+                    state: { successMessage: 'Регистрация прошла успешно!' }
+                })
             }
 
         } catch (error) {
