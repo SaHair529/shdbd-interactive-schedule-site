@@ -21,8 +21,8 @@ const LoginPage = ({ setToken }) => {
             })
 
             if (response.status === 200) {
-                // todo редиректить на другую страницу
-                alert('Успешно вошли')
+                setToken(response.data['accessToken'])
+                localStorage.setItem('accessToken', response.data['accessToken'])
             }
         } catch (error) {
             if (error.response.status === 401)
