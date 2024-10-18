@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import {useState} from "react";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import SchedulesListPage from "./pages/SchedulesListPage/SchedulesListPage";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage/> }/>
 
                     <Route path="/schedule" element={<ProtectedRoute token={token} element={<SchedulePage scheduleId={1} />} />}/>
+                    <Route path="/schedules_list" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
                 </Routes>
             </Router>
         </div>

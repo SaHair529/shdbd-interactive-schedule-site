@@ -3,13 +3,14 @@ import { Grid2, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './LoginPage.css'
 import api from "../../api";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const LoginPage = ({ setToken }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const location = useLocation()
+    const navigate = useNavigate()
     const successMessage = location.state?.successMessage
 
     const handleSubmit = async (event) => {
@@ -23,6 +24,7 @@ const LoginPage = ({ setToken }) => {
             if (response.status === 200) {
                 setToken(response.data['accessToken'])
                 localStorage.setItem('accessToken', response.data['accessToken'])
+                navigate('/schedules_list')
             }
         } catch (error) {
             if (error.response.status === 401)
