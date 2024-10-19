@@ -18,8 +18,8 @@ function App() {
                     <Route path="/login" element={<LoginPage setToken={setToken}/> }/>
                     <Route path="/register" element={<RegisterPage/> }/>
 
+                    <Route path="/" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
                     <Route path="/schedule" element={<ProtectedRoute token={token} element={<SchedulePage scheduleId={1} />} />}/>
-                    <Route path="/schedules_list" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
                 </Routes>
             </Router>
         </div>

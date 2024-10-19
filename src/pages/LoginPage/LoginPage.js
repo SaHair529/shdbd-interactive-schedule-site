@@ -24,7 +24,7 @@ const LoginPage = ({ setToken }) => {
             if (response.status === 200) {
                 setToken(response.data['accessToken'])
                 localStorage.setItem('accessToken', response.data['accessToken'])
-                navigate('/schedules_list')
+                navigate('/')
             }
         } catch (error) {
             if (error.response.status === 401)
