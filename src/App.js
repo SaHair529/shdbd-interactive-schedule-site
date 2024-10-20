@@ -9,7 +9,6 @@ import SchedulesListPage from "./pages/SchedulesListPage/SchedulesListPage";
 
 function App() {
     const [token, setToken] = useState(() => localStorage.getItem('accessToken') || null)
-    console.log(token)
 
     return (
         <div className="App">
@@ -19,7 +18,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage/> }/>
 
                     <Route path="/" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
-                    <Route path="/schedule" element={<ProtectedRoute token={token} element={<SchedulePage scheduleId={1} />} />}/>
+                    <Route path="/schedule/:id" element={<ProtectedRoute token={token} element={<SchedulePage token={token} />} />}/>
                 </Routes>
             </Router>
         </div>

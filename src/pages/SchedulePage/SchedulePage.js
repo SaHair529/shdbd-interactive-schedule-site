@@ -11,12 +11,16 @@ import {
     Typography
 } from "@mui/material";
 import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny} from "@mui/icons-material";
+import {useNavigate, useParams} from "react-router-dom";
 
 
-const SchedulePage = ({scheduleId}) => {
+const SchedulePage = ({token}) => {
+    const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const navigate = useNavigate()
+
     const dayNumbersNaming = ['','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресение'] // В начале пустая строка, чтобы у понедельника индекс был равен 1
     const dayIcons = [null,
         <AccessAlarm sx={{marginRight: 1}} />,
@@ -27,11 +31,21 @@ const SchedulePage = ({scheduleId}) => {
         <BeachAccess sx={{marginRight: 1}} />,
         <WbSunny sx={{marginRight: 1}} />]
 
-    const fetchSchedule = async (id) => {
+    const fetchSchedule = async () => {
         try {
-            const response = await api.get(`/schedule/${id}`)
+            const response = await api.get(`/schedule/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
             return response.data
         } catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
+                navigate('/login')
+                return
+            }
+
             setError(err)
             console.error(err)
             return null
@@ -40,7 +54,7 @@ const SchedulePage = ({scheduleId}) => {
 
     useEffect(() => {
         const loadSchedule = async () => {
-            const response = await fetchSchedule(scheduleId)
+            const response = await fetchSchedule()
 
             // Сортируем предметы по дням в респонсе
             response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
@@ -50,12 +64,11 @@ const SchedulePage = ({scheduleId}) => {
             response.scheduleItems = undefined
 
             setSchedule(response)
-            console.log(response)
             setLoading(false)
         }
 
         loadSchedule()
-    }, [scheduleId])
+    }, [id, token])
 
     if (loading) {
         return <CircularProgress />

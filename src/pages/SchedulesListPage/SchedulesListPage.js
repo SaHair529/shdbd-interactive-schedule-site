@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import api from "../../api";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, Link} from "react-router-dom";
 import {Button, Card, CardContent, CircularProgress, Container, Divider, Grid2, Typography} from "@mui/material";
 
 
@@ -20,8 +20,11 @@ const SchedulesListPage = ({token}) => {
             setSchedules(response.data)
             setLoading(false)
         } catch (err) {
-            if (err.response.status === 401)
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
                 navigate('/login')
+                return
+            }
             setError(err)
             setLoading(false)
         }
@@ -53,7 +56,9 @@ const SchedulesListPage = ({token}) => {
                                     <Typography variant="h6">{schedule.title}</Typography>
                                     <Typography color="textSecondary">ID: {schedule.id}</Typography>
                                     <Divider sx={{ my: 2 }} />
-                                    <Button variant="contained" color="primary" size="small">Перейти к расписанию</Button>
+                                    <Link to={`/schedule/${schedule.id}`}>
+                                        <Button variant="contained" color="primary" size="small">Перейти к расписанию</Button>
+                                    </Link>
                                 </CardContent>
                             </Card>
                         </Grid2>
