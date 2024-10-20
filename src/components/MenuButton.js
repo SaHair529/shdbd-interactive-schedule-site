@@ -1,4 +1,4 @@
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {IconButton, Menu, MenuItem} from "@mui/material";
 import {CalendarToday, Event, ExitToApp, GridView, Help, Person, Settings} from "@mui/icons-material";
 import {useState} from "react";
@@ -6,6 +6,7 @@ import {useState} from "react";
 
 const MenuButton = () => {
     const location = useLocation()
+    const navigate = useNavigate()
     const ignoredRoutes = ['/register', '/login']
     const hideMenu = ignoredRoutes.includes(location.pathname)
     const [anchorEl, setAnchorEl] = useState(null)
@@ -16,6 +17,12 @@ const MenuButton = () => {
 
     const closeMenu = () => {
         setAnchorEl(null)
+    }
+
+    const logout = () => {
+        closeMenu()
+        localStorage.removeItem('accessToken')
+        navigate('/login')
     }
 
     if (hideMenu)
@@ -35,7 +42,7 @@ const MenuButton = () => {
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
                 <MenuItem onClick={closeMenu} component={Link} to='/' ><Event sx={{mr: 1}} />Мои расписания</MenuItem>
-                <MenuItem onClick={closeMenu} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
+                <MenuItem onClick={logout} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
             </Menu>
         </>
     )
