@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Grid2, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './LoginPage.css'
@@ -34,6 +34,11 @@ const LoginPage = ({ setToken }) => {
         }
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken')
+        if (token)
+            navigate('/')
+    })
 
     return (
         <Grid2 container className='page-container' sx={{bgcolor: 'background.default'}}>
