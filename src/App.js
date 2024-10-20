@@ -5,6 +5,7 @@ import {useState} from "react";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import SchedulesListPage from "./pages/SchedulesListPage/SchedulesListPage";
+import MenuButton from "./components/MenuButton";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     return (
         <div className="App">
             <Router>
+                <MenuButton/>
                 <Routes>
                     <Route path="/login" element={<LoginPage setToken={setToken}/> }/>
                     <Route path="/register" element={<RegisterPage/> }/>
