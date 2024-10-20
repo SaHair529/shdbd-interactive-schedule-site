@@ -14,7 +14,7 @@ const Main = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <App />
+            <App darkMode={darkMode} setDarkMode={setDarkMode} />
         </ThemeProvider>
     )
 }

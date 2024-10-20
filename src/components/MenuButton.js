@@ -1,10 +1,16 @@
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {IconButton, Menu, MenuItem} from "@mui/material";
-import {CalendarToday, Event, ExitToApp, GridView, Help, Person, Settings} from "@mui/icons-material";
+import {
+    Event,
+    ExitToApp,
+    GridView,
+    NightsStay,
+    WbSunny
+} from "@mui/icons-material";
 import {useState} from "react";
 
 
-const MenuButton = () => {
+const MenuButton = ({darkMode, setDarkMode}) => {
     const location = useLocation()
     const navigate = useNavigate()
     const ignoredRoutes = ['/register', '/login']
@@ -25,6 +31,11 @@ const MenuButton = () => {
         navigate('/login')
     }
 
+    const toggleTheme = () => {
+        setDarkMode(!darkMode)
+        closeMenu()
+    }
+
     if (hideMenu)
         return
 
@@ -42,6 +53,10 @@ const MenuButton = () => {
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
                 <MenuItem onClick={closeMenu} component={Link} to='/' ><Event sx={{mr: 1}} />Мои расписания</MenuItem>
+                <MenuItem onClick={toggleTheme}>
+                    {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
+                    {darkMode ? 'Светлая тема' : 'Темная тема'}
+                </MenuItem>
                 <MenuItem onClick={logout} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
             </Menu>
         </>
