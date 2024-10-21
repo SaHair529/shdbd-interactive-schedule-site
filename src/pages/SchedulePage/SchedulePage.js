@@ -61,7 +61,7 @@ const SchedulePage = ({token}) => {
             const response = await fetchSchedule()
 
             // Сортируем предметы по дням в респонсе
-            if (response.status === 200) {
+            if (response.id) { // Если расписание найдено
                 response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
                 response.scheduleItems.forEach(scheduleItem => {
                     scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', {
@@ -72,6 +72,7 @@ const SchedulePage = ({token}) => {
                 })
                 response.scheduleItems = undefined
 
+                console.log(response)
                 setSchedule(response)
             }
             setLoading(false)
