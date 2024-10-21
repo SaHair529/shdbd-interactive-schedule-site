@@ -59,7 +59,8 @@ const SchedulePage = ({token}) => {
             // Сортируем предметы по дням в респонсе
             response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
             response.scheduleItems.forEach(scheduleItem => {
-                response.sortedScheduleItems[scheduleItem.dayOfWeek].push(scheduleItem)
+                scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+                response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
             })
             response.scheduleItems = undefined
 
@@ -98,8 +99,22 @@ const SchedulePage = ({token}) => {
                         </Paper>
                         {schedule.sortedScheduleItems[dayNumber].map(scheduleItem => (
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
-                                <Paper elevation={3} className='subject-paper'>
+                                <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper'>
                                     <Typography >{scheduleItem.subject.name}</Typography>
+                                    <Paper sx={{
+                                        position: 'absolute',
+                                        right: 0,
+                                        top: 8,
+                                        px: 2,
+                                        borderRadius: 0,
+                                        bgcolor: '#B0BEC5',
+                                        color: '#fff',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        fontSize: 13
+                                    }}>
+                                        {(scheduleItem.startTime)}
+                                    </Paper>
                                 </Paper>
                             </Grid2>
                         ))}
