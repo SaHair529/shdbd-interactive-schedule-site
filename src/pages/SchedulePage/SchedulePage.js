@@ -10,7 +10,7 @@ import {
     Paper,
     Typography
 } from "@mui/material";
-import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny} from "@mui/icons-material";
+import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny, ErrorOutline} from "@mui/icons-material";
 import {useNavigate, useParams} from "react-router-dom";
 
 
@@ -45,6 +45,10 @@ const SchedulePage = ({token}) => {
                 navigate('/login')
                 return
             }
+            else if (err.response.status === 404) {
+                setError('Расписание не найдено')
+                return err.response
+            }
 
             setError(err)
             console.error(err)
@@ -57,14 +61,19 @@ const SchedulePage = ({token}) => {
             const response = await fetchSchedule()
 
             // Сортируем предметы по дням в респонсе
-            response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
-            response.scheduleItems.forEach(scheduleItem => {
-                scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-                response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
-            })
-            response.scheduleItems = undefined
+            if (response.status === 200) {
+                response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
+                response.scheduleItems.forEach(scheduleItem => {
+                    scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
+                })
+                response.scheduleItems = undefined
 
-            setSchedule(response)
+                setSchedule(response)
+            }
             setLoading(false)
         }
 
@@ -76,7 +85,25 @@ const SchedulePage = ({token}) => {
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <Container maxWidth='xxl' sx={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'background.default'
+            }}>
+                <Paper elevation={3} sx={{
+                    padding: 3,
+                    textAlign: 'center',
+                    bgcolor: '#FFEBEE', // Светлый красный фон для ошибки
+                    color: '#D32F2F' // Красный цвет текста
+                }}>
+                    <ErrorOutline sx={{ fontSize: 40}} />
+                    <Typography variant="h6">{error}</Typography>
+                </Paper>
+            </Container>
+        );
     }
 
     return (
