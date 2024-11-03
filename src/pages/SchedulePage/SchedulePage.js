@@ -3,11 +3,11 @@ import api from "../../api";
 import './SchedulePage.css'
 import WorkIcon from '@mui/icons-material/Work';
 import {
-    Box,
+    Box, Button,
     CircularProgress,
     Container,
-    Grid2,
-    Paper,
+    Grid2, Modal,
+    Paper, TextField,
     Typography
 } from "@mui/material";
 import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny, ErrorOutline} from "@mui/icons-material";
@@ -18,6 +18,10 @@ const SchedulePage = ({token}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
+    const [selectedScheduleItem, setSelectedScheduleItem] = useState(null)
+    const [openChat, setOpenChat] = useState(false)
+    const [messages, setMessages] = useState([])
+    const [newMessage, setNewMessage] = useState('')
     const [error, setError] = useState(null)
     const navigate = useNavigate()
 
@@ -54,6 +58,23 @@ const SchedulePage = ({token}) => {
             console.error(err)
             return null
         }
+    }
+
+    const handleSubjectClick = (scheduleItem) => {
+        setSelectedScheduleItem(scheduleItem)
+        setOpenChat(true)
+    }
+
+    const handleCloseChat = () => {
+        setOpenChat(false)
+        setSelectedScheduleItem(null)
+    }
+
+    const handleSendMessage = () => {
+        if (newMessage.trim() === '') return
+
+        setMessages([...messages, {id: messages.length1, text: newMessage, sender: 'student'}])
+        setNewMessage('')
     }
 
     useEffect(() => {
@@ -127,7 +148,7 @@ const SchedulePage = ({token}) => {
                         </Paper>
                         {schedule.sortedScheduleItems[dayNumber].map(scheduleItem => (
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
-                                <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper'>
+                                <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper' onClick={() => handleSubjectClick(scheduleItem)}>
                                     <Typography >{scheduleItem.subject.name}</Typography>
                                     <Paper sx={{
                                         position: 'absolute',
@@ -148,9 +169,85 @@ const SchedulePage = ({token}) => {
                         ))}
                     </Grid2>
                 ))}
-
-                {/* Заполнение уроками */}
             </Grid2>
+
+            {/* Модальное окно чата */}
+            <Modal open={openChat} onClose={handleCloseChat}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    height: 500,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                    display:'flex',
+                    flexDirection:'column'
+                }}>
+                    <Typography variant="h6" component="h2" color='text.primary'>
+                        Чат по предмету "{selectedScheduleItem?.subject.name}"
+                    </Typography>
+
+                    {/* Список сообщений */}
+                    <Box sx={{
+                        flexGrow:'1',
+                        overflowY:'auto',
+                        mt:'10px',
+                        mb:'10px',
+                        border:'1px solid #ccc',
+                        borderRadius:'4px',
+                        padding:'10px',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word'
+                    }}>
+                        {messages.map(message => (
+                            <Typography key={message.id}
+                                        align={message.sender === "student" ? "right" : "left"}
+                                        sx={{
+                                            backgroundColor : message.sender === "student" ? "#e0f7fa" : "#fce4ec",
+                                            borderRadius : "8px",
+                                            padding : "5px",
+                                            marginBottom : "5px"
+                                        }}
+                            >
+                                {message.text}
+                            </Typography>
+                        ))}
+                    </Box>
+
+                    {/* Поле ввода для нового сообщения */}
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        placeholder="Введите сообщение..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} // Отправка по нажатию Enter
+                    />
+
+                    <Box sx={{ display: 'flex', marginTop: "10px" }}>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => console.log('handleAbsence(selectedScheduleItem.id)')}
+                            sx={{ flex: 0.3 }}
+                        >
+                            Не приду
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSendMessage}
+                            sx={{ flex: 1, marginLeft: '10px' }}
+                        >
+                            Отправить
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
 
         </Container>
     );
