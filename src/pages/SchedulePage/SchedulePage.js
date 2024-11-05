@@ -60,14 +60,34 @@ const SchedulePage = ({token}) => {
         }
     }
 
-    const handleSubjectClick = (scheduleItem) => {
-        setSelectedScheduleItem(scheduleItem)
-        setOpenChat(true)
+    const handleSubjectClick = async (scheduleItem) => {
+        try {
+            const response = await api.get(`/schedule/event/list/${scheduleItem.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setSelectedScheduleItem(scheduleItem)
+            setMessages(response.data)
+            setOpenChat(true)
+        } catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
+                navigate('/login')
+                return
+            }
+
+            setError(err)
+        }
     }
 
     const handleCloseChat = () => {
         setOpenChat(false)
         setSelectedScheduleItem(null)
+    }
+
+    const handleAbsence = () => {
+
     }
 
     const handleSendMessage = () => {
@@ -129,13 +149,7 @@ const SchedulePage = ({token}) => {
     }
 
     return (
-        <Container maxWidth='xxl' sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: 'background.default'
-        }} >
+        <Container maxWidth='xxl' sx={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default'}} >
             <Grid2 container spacing={1} sx={{width: '60%'}}>
                 {/* Заголовки дней */}
                 {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
@@ -150,18 +164,7 @@ const SchedulePage = ({token}) => {
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
                                 <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper' onClick={() => handleSubjectClick(scheduleItem)}>
                                     <Typography >{scheduleItem.subject.name}</Typography>
-                                    <Paper sx={{
-                                        position: 'absolute',
-                                        right: 0,
-                                        top: 8,
-                                        px: 2,
-                                        borderRadius: 0,
-                                        bgcolor: '#B0BEC5',
-                                        color: '#fff',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        fontSize: 13
-                                    }}>
+                                    <Paper sx={{position: 'absolute', right: 0, top: 8, px: 2, borderRadius: 0, bgcolor: '#B0BEC5', color: '#fff', display: 'flex', alignItems: 'center', fontSize: 13}}>
                                         {(scheduleItem.startTime)}
                                     </Paper>
                                 </Paper>
@@ -173,76 +176,35 @@ const SchedulePage = ({token}) => {
 
             {/* Модальное окно чата */}
             <Modal open={openChat} onClose={handleCloseChat}>
-                <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 400,
-                    height: 500,
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: 4,
-                    borderRadius: 2,
-                    display:'flex',
-                    flexDirection:'column'
-                }}>
+                <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, height: 500, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, display:'flex', flexDirection:'column'}}>
                     <Typography variant="h6" component="h2" color='text.primary'>
                         Чат по предмету "{selectedScheduleItem?.subject.name}"
                     </Typography>
 
                     {/* Список сообщений */}
-                    <Box sx={{
-                        flexGrow:'1',
-                        overflowY:'auto',
-                        mt:'10px',
-                        mb:'10px',
-                        border:'1px solid #ccc',
-                        borderRadius:'4px',
-                        padding:'10px',
-                        wordWrap: 'break-word',
-                        overflowWrap: 'break-word'
-                    }}>
+                    <Box sx={{flexGrow:'1', overflowY:'auto', mt:'10px', mb:'10px', border:'1px solid #ccc', borderRadius:'4px', padding:'10px', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
                         {messages.map(message => (
-                            <Typography key={message.id}
-                                        align={message.sender === "student" ? "right" : "left"}
-                                        sx={{
-                                            backgroundColor : message.sender === "student" ? "#e0f7fa" : "#fce4ec",
-                                            borderRadius : "8px",
-                                            padding : "5px",
-                                            marginBottom : "5px"
-                                        }}
-                            >
-                                {message.text}
-                            </Typography>
+                            message.type === 1 ? (
+                                    <Typography key={message.id} sx={{marginBottom: "5px", fontStyle: "italic", color: "#616161"}}>
+                                        Студент {message.student.id} будет отсутствовать
+                                    </Typography>
+                                ) :
+                                (
+                                    <Typography key={message.id} align={message.sender === "student" ? "right" : "left"} sx={{backgroundColor: message.sender === "student" ? "#e0f7fa" : "#fce4ec", borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
+                                        {message.text}
+                                    </Typography>
+                                )
                         ))}
                     </Box>
 
                     {/* Поле ввода для нового сообщения */}
-                    <TextField
-                        variant="outlined"
-                        fullWidth
-                        placeholder="Введите сообщение..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} // Отправка по нажатию Enter
-                    />
+                    <TextField variant="outlined" fullWidth placeholder="Введите сообщение..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} /* Отправка по нажатию Enter *//>
 
                     <Box sx={{ display: 'flex', marginTop: "10px" }}>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => console.log('handleAbsence(selectedScheduleItem.id)')}
-                            sx={{ flex: 0.3 }}
-                        >
+                        <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex: 0.3 }}>
                             Не приду
                         </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSendMessage}
-                            sx={{ flex: 1, marginLeft: '10px' }}
-                        >
+                        <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
                             Отправить
                         </Button>
                     </Box>
