@@ -70,6 +70,10 @@ const SchedulePage = ({token}) => {
         setSelectedScheduleItem(null)
     }
 
+    const handleAbsence = () => {
+
+    }
+
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return
 
@@ -232,7 +236,7 @@ const SchedulePage = ({token}) => {
                         <Button
                             variant="outlined"
                             color="secondary"
-                            onClick={() => console.log('handleAbsence(selectedScheduleItem.id)')}
+                            onClick={() => handleAbsence(selectedScheduleItem.id)}
                             sx={{ flex: 0.3 }}
                         >
                             Не приду
