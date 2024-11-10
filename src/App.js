@@ -21,7 +21,7 @@ function App({darkMode, setDarkMode}) {
                     <Route path="/register" element={<RegisterPage/> }/>
 
                     <Route path="/" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
-                    <Route path="/schedule/:id" element={<ProtectedRoute token={token} element={<SchedulePage token={token} />} />}/>
+                    <Route path="/schedule/:id" element={<ProtectedRoute token={token} element={<SchedulePage token={token} userId={userId} />} />}/>
                 </Routes>
             </Router>
         </div>

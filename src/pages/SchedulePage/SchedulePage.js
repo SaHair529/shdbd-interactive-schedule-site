@@ -14,7 +14,7 @@ import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny, Err
 import {useNavigate, useParams} from "react-router-dom";
 
 
-const SchedulePage = ({token}) => {
+const SchedulePage = ({token, userId}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
@@ -22,6 +22,7 @@ const SchedulePage = ({token}) => {
     const [openChat, setOpenChat] = useState(false)
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
+    const [absenceEventId, setAbsenceEventId] = useState(null)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
 
@@ -67,6 +68,10 @@ const SchedulePage = ({token}) => {
                     Authorization: `Bearer ${token}`
                 }
             })
+            response.data.map((event) => {
+                if (event['type'] === 1 && ''+event['student']['id'] === userId)
+                    setAbsenceEventId(event['id'])
+            })
             setSelectedScheduleItem(scheduleItem)
             setMessages(response.data)
             setOpenChat(true)
@@ -84,10 +89,32 @@ const SchedulePage = ({token}) => {
     const handleCloseChat = () => {
         setOpenChat(false)
         setSelectedScheduleItem(null)
+        setAbsenceEventId(null)
     }
 
-    const handleAbsence = () => {
+    const handleAbsence = async (scheduleItemId) => {
+        try {
+            const response = await api.post('/schedule/event',
+                {
+                    scheduleItemId: scheduleItemId,
+                    reason: 'reason', // todo добавить возможность студенту вписывать причину отсутствия при нажатии на кнопку "Не приду"
+                    type: 1
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            if (response.status === 201) {
+                setMessages([...messages, response.data])
+                setAbsenceEventId(response.data.id)
+            }
 
+
+        } catch (error) {
+
+        }
     }
 
     const handleSendMessage = () => {
@@ -113,7 +140,6 @@ const SchedulePage = ({token}) => {
                 })
                 response.scheduleItems = undefined
 
-                console.log(response)
                 setSchedule(response)
             }
             setLoading(false)
@@ -201,9 +227,15 @@ const SchedulePage = ({token}) => {
                     <TextField variant="outlined" fullWidth placeholder="Введите сообщение..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} /* Отправка по нажатию Enter *//>
 
                     <Box sx={{ display: 'flex', marginTop: "10px" }}>
-                        <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex: 0.3 }}>
-                            Не приду
-                        </Button>
+                        {absenceEventId ? (
+                            <Button variant="outlined" color="success" onClick={() => {/* Новый обработчик для кнопки "Приду" */}} sx={{ flex:0.3 }}>
+                                Приду
+                            </Button>
+                        ) : (
+                            <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex:0.3 }}>
+                                Не приду
+                            </Button>
+                        )}
                         <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
                             Отправить
                         </Button>
