@@ -10,13 +10,14 @@ import MenuButton from "./components/MenuButton";
 
 function App({darkMode, setDarkMode}) {
     const [token, setToken] = useState(() => localStorage.getItem('accessToken') || null)
+    const [userId, setUserId] = useState(() => localStorage.getItem('userId') || null)
 
     return (
         <div className="App">
             <Router>
                 <MenuButton darkMode={darkMode} setDarkMode={setDarkMode} />
                 <Routes>
-                    <Route path="/login" element={<LoginPage setToken={setToken}/> }/>
+                    <Route path="/login" element={<LoginPage setToken={setToken} setUserId={setUserId} /> }/>
                     <Route path="/register" element={<RegisterPage/> }/>
 
                     <Route path="/" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>

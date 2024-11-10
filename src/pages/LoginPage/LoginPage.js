@@ -5,7 +5,7 @@ import './LoginPage.css'
 import api from "../../api";
 import {useLocation, useNavigate} from "react-router-dom";
 
-const LoginPage = ({ setToken }) => {
+const LoginPage = ({ setToken, setUserId }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -23,7 +23,9 @@ const LoginPage = ({ setToken }) => {
 
             if (response.status === 200) {
                 setToken(response.data['accessToken'])
+                setUserId(response.data['userId'])
                 localStorage.setItem('accessToken', response.data['accessToken'])
+                localStorage.setItem('userId', response.data['userId'])
                 navigate('/')
             }
         } catch (error) {
