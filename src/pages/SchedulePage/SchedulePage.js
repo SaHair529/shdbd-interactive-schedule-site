@@ -92,6 +92,9 @@ const SchedulePage = ({token, userId}) => {
         setAbsenceEventId(null)
     }
 
+    /**
+     * Обработчик кнопки "Не приду"
+     */
     const handleAbsence = async (scheduleItemId) => {
         try {
             const response = await api.post('/schedule/event',
@@ -113,6 +116,22 @@ const SchedulePage = ({token, userId}) => {
 
 
         } catch (error) {
+
+        }
+    }
+
+    const handlePresence = async () => {
+        try {
+            const response = await api.delete(`/schedule/event/${absenceEventId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (response.status === 204) {
+                setAbsenceEventId(null)
+            }
+        }
+        catch (error) {
 
         }
     }
@@ -228,7 +247,7 @@ const SchedulePage = ({token, userId}) => {
 
                     <Box sx={{ display: 'flex', marginTop: "10px" }}>
                         {absenceEventId ? (
-                            <Button variant="outlined" color="success" onClick={() => {/* Новый обработчик для кнопки "Приду" */}} sx={{ flex:0.3 }}>
+                            <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex:0.3 }}>
                                 Приду
                             </Button>
                         ) : (
