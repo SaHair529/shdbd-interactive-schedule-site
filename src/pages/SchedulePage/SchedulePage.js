@@ -69,7 +69,7 @@ const SchedulePage = ({token, userId}) => {
                 }
             })
             response.data.map((event) => {
-                if (event['type'] === 1 && ''+event['student']['id'] === userId)
+                if (event['type'] === 1 && +event['student']['id'] === +userId)
                     setAbsenceEventId(event['id'])
             })
             setSelectedScheduleItem(scheduleItem)
@@ -100,7 +100,7 @@ const SchedulePage = ({token, userId}) => {
             const response = await api.post('/schedule/event',
                 {
                     scheduleItemId: scheduleItemId,
-                    reason: 'reason', // todo добавить возможность студенту вписывать причину отсутствия при нажатии на кнопку "Не приду"
+                    reason: 'reason',
                     type: 1
                 },
                 {
