@@ -128,6 +128,13 @@ const SchedulePage = ({token, userId}) => {
                 }
             })
             if (response.status === 204) {
+                for (let i = 0; i < messages.length; i++) {
+                    if (messages[i]['id'] === absenceEventId) {
+                        messages.splice(i, 1)
+                        break;
+                    }
+                }
+                setMessages(messages)
                 setAbsenceEventId(null)
             }
         }
