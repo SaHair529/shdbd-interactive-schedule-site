@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import api from "../../api";
 import './SchedulePage.css'
 import WorkIcon from '@mui/icons-material/Work';
@@ -23,6 +23,7 @@ const SchedulePage = ({token, userId}) => {
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
     const [absenceEventId, setAbsenceEventId] = useState(null)
+    const messagesEndRef = useRef(null)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
 
@@ -171,29 +172,39 @@ const SchedulePage = ({token, userId}) => {
         setNewMessage('')
     }
 
-    useEffect(() => {
-        const loadSchedule = async () => {
-            const response = await fetchSchedule()
+    const loadSchedule = async () => {
+        const response = await fetchSchedule()
 
-            // Сортируем предметы по дням в респонсе
-            if (response.id) { // Если расписание найдено
-                response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
-                response.scheduleItems.forEach(scheduleItem => {
-                    scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })
-                    response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
+        // Сортируем предметы по дням в респонсе
+        if (response.id) { // Если расписание найдено
+            response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
+            response.scheduleItems.forEach(scheduleItem => {
+                scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit'
                 })
-                response.scheduleItems = undefined
+                response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
+            })
+            response.scheduleItems = undefined
 
-                setSchedule(response)
-            }
-            setLoading(false)
+            setSchedule(response)
         }
+        setLoading(false)
+    }
 
+
+    useEffect(() => {
         loadSchedule()
     }, [id, token])
+
+    useEffect(() => {
+        if (openChat) {
+            const timer = setTimeout(() => { // todo нужно придумать как сделать, чтобы это работало без setTimeout
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [openChat, messages])
 
     if (loading) {
         return <CircularProgress />
@@ -268,6 +279,7 @@ const SchedulePage = ({token, userId}) => {
                                     </Typography>
                                 )
                         ))}
+                        <div ref={messagesEndRef} />
                     </Box>
 
                     {/* Поле ввода для нового сообщения */}
