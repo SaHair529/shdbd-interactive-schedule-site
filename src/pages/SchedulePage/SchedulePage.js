@@ -143,10 +143,31 @@ const SchedulePage = ({token, userId}) => {
         }
     }
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (newMessage.trim() === '') return
 
-        setMessages([...messages, {id: messages.length1, text: newMessage, sender: 'student'}])
+        try {
+            const response = await api.post('/schedule/event',
+                {
+                    scheduleItemId: selectedScheduleItem.id,
+                    reason: newMessage,
+                    type: 2
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            if (response.status === 201) {
+                setMessages([...messages, response.data])
+            }
+
+
+        } catch (error) {
+
+        }
+
         setNewMessage('')
     }
 
@@ -242,8 +263,8 @@ const SchedulePage = ({token, userId}) => {
                                     </Typography>
                                 ) :
                                 (
-                                    <Typography key={message.id} align={message.sender === "student" ? "right" : "left"} sx={{backgroundColor: message.sender === "student" ? "#e0f7fa" : "#fce4ec", borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
-                                        {message.text}
+                                    <Typography key={message.id} align="right" sx={{backgroundColor: "#e0f7fa", borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
+                                        {message.reason}
                                     </Typography>
                                 )
                         ))}
