@@ -263,7 +263,7 @@ const SchedulePage = ({token, userId}) => {
                                     </Typography>
                                 ) :
                                 (
-                                    <Typography key={message.id} align="right" sx={{backgroundColor: "#e0f7fa", borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
+                                    <Typography key={message.id} sx={{backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userId ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
                                         {message.reason}
                                     </Typography>
                                 )
