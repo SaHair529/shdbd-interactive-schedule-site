@@ -249,7 +249,7 @@ const SchedulePage = ({token, userId}) => {
 
             {/* Модальное окно чата */}
             <Modal open={openChat} onClose={handleCloseChat}>
-                <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, height: 500, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, display:'flex', flexDirection:'column'}}>
+                <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, height: 500, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, display:'flex', flexDirection:'column'}}>
                     <Typography variant="h6" component="h2" color='text.primary'>
                         Чат по предмету "{selectedScheduleItem?.subject.name}"
                     </Typography>
