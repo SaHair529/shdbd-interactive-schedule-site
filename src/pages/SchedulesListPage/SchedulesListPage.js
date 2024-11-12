@@ -4,7 +4,7 @@ import {useNavigate, Link} from "react-router-dom";
 import {Button, Card, CardContent, CircularProgress, Container, Divider, Grid2, Typography} from "@mui/material";
 
 
-const SchedulesListPage = ({token}) => {
+const SchedulesListPage = ({userSessionData}) => {
     const [schedules, setSchedules] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -14,7 +14,7 @@ const SchedulesListPage = ({token}) => {
         try {
             const response = await api.get('/user_schedules', {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
             })
             setSchedules(response.data)
@@ -32,7 +32,7 @@ const SchedulesListPage = ({token}) => {
 
     useEffect(() => {
         fetchSchedules()
-    }, [token])
+    }, [userSessionData])
 
     if (loading) return <CircularProgress />
     if (error) return <div>Error: {error.message}</div>

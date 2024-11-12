@@ -27,7 +27,7 @@ const MenuButton = ({darkMode, setDarkMode}) => {
 
     const logout = () => {
         closeMenu()
-        localStorage.removeItem('accessToken')
+        localStorage.removeItem('userSessionData')
         navigate('/login')
     }
 

@@ -9,19 +9,18 @@ import MenuButton from "./components/MenuButton";
 
 
 function App({darkMode, setDarkMode}) {
-    const [token, setToken] = useState(() => localStorage.getItem('accessToken') || null)
-    const [userId, setUserId] = useState(() => localStorage.getItem('userId') || null)
+    const [userSessionData, setUserSessionData] = useState(() => JSON.parse(localStorage.getItem('userSessionData')));
 
     return (
         <div className="App">
             <Router>
                 <MenuButton darkMode={darkMode} setDarkMode={setDarkMode} />
                 <Routes>
-                    <Route path="/login" element={<LoginPage setToken={setToken} setUserId={setUserId} /> }/>
+                    <Route path="/login" element={<LoginPage setUserSessionData={setUserSessionData} /> }/>
                     <Route path="/register" element={<RegisterPage/> }/>
 
-                    <Route path="/" element={<ProtectedRoute token={token} element={<SchedulesListPage token={token} />} />}/>
-                    <Route path="/schedule/:id" element={<ProtectedRoute token={token} element={<SchedulePage token={token} userId={userId} />} />}/>
+                    <Route path="/" element={<ProtectedRoute userSessionData={userSessionData} element={<SchedulesListPage userSessionData={userSessionData} />} />}/>
+                    <Route path="/schedule/:id" element={<ProtectedRoute userSessionData={userSessionData} element={<SchedulePage userSessionData={userSessionData} />} />}/>
                 </Routes>
             </Router>
         </div>

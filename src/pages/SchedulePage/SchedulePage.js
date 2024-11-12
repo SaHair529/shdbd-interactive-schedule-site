@@ -14,7 +14,7 @@ import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny, Err
 import {useNavigate, useParams} from "react-router-dom";
 
 
-const SchedulePage = ({token, userId}) => {
+const SchedulePage = ({userSessionData}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
@@ -41,7 +41,7 @@ const SchedulePage = ({token, userId}) => {
         try {
             const response = await api.get(`/schedule/${id}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
             })
             return response.data
@@ -66,11 +66,11 @@ const SchedulePage = ({token, userId}) => {
         try {
             const response = await api.get(`/schedule/event/list/${scheduleItem.id}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
             })
             response.data.map((event) => {
-                if (event['type'] === 1 && +event['student']['id'] === +userId)
+                if (event['type'] === 1 && +event['student']['id'] === +userSessionData['userId'])
                     setAbsenceEventId(event['id'])
             })
             setSelectedScheduleItem(scheduleItem)
@@ -106,7 +106,7 @@ const SchedulePage = ({token, userId}) => {
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
                     }
                 }
             )
@@ -125,7 +125,7 @@ const SchedulePage = ({token, userId}) => {
         try {
             const response = await api.delete(`/schedule/event/${absenceEventId}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
             })
             if (response.status === 204) {
@@ -156,7 +156,7 @@ const SchedulePage = ({token, userId}) => {
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
                     }
                 }
             )
@@ -195,7 +195,7 @@ const SchedulePage = ({token, userId}) => {
 
     useEffect(() => {
         loadSchedule()
-    }, [id, token])
+    }, [id, userSessionData])
 
     useEffect(() => {
         if (openChat) {
@@ -274,7 +274,7 @@ const SchedulePage = ({token, userId}) => {
                                     </Typography>
                                 ) :
                                 (
-                                    <Typography key={message.id} sx={{backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userId ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
+                                    <Typography key={message.id} sx={{backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
                                         {message.reason}
                                     </Typography>
                                 )
