@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 
 
 const RegisterPage = () => {
+    const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
@@ -17,7 +18,8 @@ const RegisterPage = () => {
         try {
             const response = await api.post('/register', {
                 email: email,
-                password: password
+                password: password,
+                fullName: fullName
             })
 
             if (response.status === 201) {
@@ -43,6 +45,14 @@ const RegisterPage = () => {
                 </Grid2>
                 {errorMessage && <Typography color="error">{errorMessage}</Typography>}
                 <form onSubmit={handleSubmit}>
+                    <TextField
+                        label='ФИО'
+                        placeholder='Введите ФИО'
+                        variant="outlined"
+                        fullWidth
+                        required
+                        onChange={(e) => setFullName(e.target.value)}
+                    />
                     <TextField
                         label='Email'
                         placeholder='Введите email'
