@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import api from "../../api";
 import {useNavigate, Link} from "react-router-dom";
-import {Button, Card, CardContent, CircularProgress, Container, Divider, Grid2, Typography} from "@mui/material";
+import {Button, Card, CardContent, Container, Divider, Grid2, Typography} from "@mui/material";
+import FullscreenLoader from "../../components/FullscreenLoader";
 
 
 const SchedulesListPage = ({userSessionData}) => {
@@ -34,7 +35,7 @@ const SchedulesListPage = ({userSessionData}) => {
         fetchSchedules()
     }, [userSessionData])
 
-    if (loading) return <CircularProgress />
+    if (loading) return <FullscreenLoader loading={loading} />
     if (error) return <div>Error: {error.message}</div>
 
     return (
