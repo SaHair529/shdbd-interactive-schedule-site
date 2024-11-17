@@ -6,6 +6,8 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import SchedulesListPage from "./pages/SchedulesListPage/SchedulesListPage";
 import MenuButton from "./components/MenuButton";
+import AdminProtectedRoute from "./pages/AdminProtectedRoute";
+import AdminScheduleListPage from "./pages/Admin/AdminScheduleListPage/AdminScheduleListPage";
 
 
 function App({darkMode, setDarkMode}) {
@@ -21,6 +23,8 @@ function App({darkMode, setDarkMode}) {
 
                     <Route path="/" element={<ProtectedRoute userSessionData={userSessionData} element={<SchedulesListPage userSessionData={userSessionData} />} />}/>
                     <Route path="/schedule/:id" element={<ProtectedRoute userSessionData={userSessionData} element={<SchedulePage userSessionData={userSessionData} />} />}/>
+
+                    <Route path="/admin" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminScheduleListPage userSessionData={userSessionData} />} />}/>
                 </Routes>
             </Router>
         </div>
