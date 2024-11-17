@@ -18,6 +18,7 @@ const SchedulePage = ({userSessionData}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
+    const [absenceButtonLoading, setAbsenceButtonLoading] = useState(false)
     const [selectedScheduleItem, setSelectedScheduleItem] = useState(null)
     const [openChat, setOpenChat] = useState(false)
     const [messages, setMessages] = useState([])
@@ -91,6 +92,7 @@ const SchedulePage = ({userSessionData}) => {
         setOpenChat(false)
         setSelectedScheduleItem(null)
         setAbsenceEventId(null)
+        setAbsenceButtonLoading(false)
     }
 
     /**
@@ -98,6 +100,7 @@ const SchedulePage = ({userSessionData}) => {
      */
     const handleAbsence = async (scheduleItemId) => {
         try {
+            setAbsenceButtonLoading(true)
             const response = await api.post('/schedule/event',
                 {
                     scheduleItemId: scheduleItemId,
@@ -113,6 +116,7 @@ const SchedulePage = ({userSessionData}) => {
             if (response.status === 201) {
                 setMessages([...messages, response.data])
                 setAbsenceEventId(response.data.id)
+                setAbsenceButtonLoading(false)
             }
 
 
@@ -123,6 +127,7 @@ const SchedulePage = ({userSessionData}) => {
 
     const handlePresence = async () => {
         try {
+            setAbsenceButtonLoading(true)
             const response = await api.delete(`/schedule/event/${absenceEventId}`, {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
@@ -137,6 +142,7 @@ const SchedulePage = ({userSessionData}) => {
                 }
                 setMessages(messages)
                 setAbsenceEventId(null)
+                setAbsenceButtonLoading(false)
             }
         }
         catch (error) {
@@ -269,7 +275,7 @@ const SchedulePage = ({userSessionData}) => {
                     <Box sx={{flexGrow:'1', overflowY:'auto', mt:'10px', mb:'10px', border:'1px solid #ccc', borderRadius:'4px', padding:'10px', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
                         {messages.map(message => (
                             message.type === 1 ? (
-                                    <Typography key={message.id} sx={{marginBottom: "5px", fontStyle: "italic", color: "#616161"}}>
+                                    <Typography key={message.id} sx={{marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center'}}>
                                         Студент {message.student.id} будет отсутствовать
                                     </Typography>
                                 ) :
@@ -287,12 +293,12 @@ const SchedulePage = ({userSessionData}) => {
 
                     <Box sx={{ display: 'flex', marginTop: "10px" }}>
                         {absenceEventId ? (
-                            <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex:0.3 }}>
-                                Приду
+                            <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex:0.3 }} disabled={absenceButtonLoading}>
+                                { absenceButtonLoading ? <CircularProgress size={24} /> : 'Приду' }
                             </Button>
                         ) : (
-                            <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex:0.3 }}>
-                                Не приду
+                            <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex:0.3 }} disabled={absenceButtonLoading}>
+                                { absenceButtonLoading ? <CircularProgress size={24} /> : 'Не приду' }
                             </Button>
                         )}
                         <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
