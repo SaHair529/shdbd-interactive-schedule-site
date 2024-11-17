@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import {Equalizer, AccessAlarm, Assignment, PartyMode, BeachAccess, WbSunny, ErrorOutline} from "@mui/icons-material";
 import {useNavigate, useParams} from "react-router-dom";
+import FullscreenLoader from "../../components/FullscreenLoader";
 
 
 const SchedulePage = ({userSessionData}) => {
@@ -216,7 +217,7 @@ const SchedulePage = ({userSessionData}) => {
     }, [openChat, messages])
 
     if (loading) {
-        return <CircularProgress />
+        return <FullscreenLoader />
     }
 
     if (error) {
