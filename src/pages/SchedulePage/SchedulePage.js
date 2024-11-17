@@ -19,6 +19,7 @@ const SchedulePage = ({userSessionData}) => {
     const [schedule, setSchedule] = useState({})
     const [loading, setLoading] = useState(true)
     const [absenceButtonLoading, setAbsenceButtonLoading] = useState(false)
+    const [chatLoading, setChatLoading] = useState(false)
     const [selectedScheduleItem, setSelectedScheduleItem] = useState(null)
     const [openChat, setOpenChat] = useState(false)
     const [messages, setMessages] = useState([])
@@ -65,6 +66,8 @@ const SchedulePage = ({userSessionData}) => {
 
     const handleSubjectClick = async (scheduleItem) => {
         try {
+            setChatLoading(true)
+            setOpenChat(true)
             const response = await api.get(`/schedule/event/list/${scheduleItem.id}`, {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
@@ -76,7 +79,7 @@ const SchedulePage = ({userSessionData}) => {
             })
             setSelectedScheduleItem(scheduleItem)
             setMessages(response.data)
-            setOpenChat(true)
+            setChatLoading(false)
         } catch (err) {
             if (err.response.status === 401) {
                 localStorage.removeItem('accessToken')
@@ -266,45 +269,85 @@ const SchedulePage = ({userSessionData}) => {
 
             {/* Модальное окно чата */}
             <Modal open={openChat} onClose={handleCloseChat}>
-                <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '90%', width: 500, height: 500, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, display:'flex', flexDirection:'column'}}>
-                    <Typography variant="h6" component="h2" color='text.primary'>
-                        Чат по предмету "{selectedScheduleItem?.subject.name}"
-                    </Typography>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '90%',
+                    width: 500,
+                    height: 500,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: chatLoading ? 'center' : 'inherit',
+                    alignItems: chatLoading ? 'center' : 'inherit',
+                }}>
 
-                    {/* Список сообщений */}
-                    <Box sx={{flexGrow:'1', overflowY:'auto', mt:'10px', mb:'10px', border:'1px solid #ccc', borderRadius:'4px', padding:'10px', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
-                        {messages.map(message => (
-                            message.type === 1 ? (
-                                    <Typography key={message.id} sx={{marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center'}}>
-                                        Студент {message.student.id} будет отсутствовать
-                                    </Typography>
-                                ) :
-                                (
-                                    <Typography key={message.id} sx={{backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px"}}>
-                                        {message.reason}
-                                    </Typography>
-                                )
-                        ))}
-                        <div ref={messagesEndRef} />
-                    </Box>
-
-                    {/* Поле ввода для нового сообщения */}
-                    <TextField variant="outlined" fullWidth placeholder="Введите сообщение..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} /* Отправка по нажатию Enter *//>
-
-                    <Box sx={{ display: 'flex', marginTop: "10px" }}>
-                        {absenceEventId ? (
-                            <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex:0.3 }} disabled={absenceButtonLoading}>
-                                { absenceButtonLoading ? <CircularProgress size={24} /> : 'Приду' }
-                            </Button>
+                    {
+                        chatLoading ? (
+                            <CircularProgress />
                         ) : (
-                            <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex:0.3 }} disabled={absenceButtonLoading}>
-                                { absenceButtonLoading ? <CircularProgress size={24} /> : 'Не приду' }
-                            </Button>
-                        )}
-                        <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
-                            Отправить
-                        </Button>
-                    </Box>
+                            <>
+                                <Box
+                                    sx={{
+                                        flexGrow: '1',
+                                        overflowY: 'auto',
+                                        mt: '10px',
+                                        mb: '10px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px',
+                                        padding: '10px',
+                                        wordWrap: 'break-word',
+                                        overflowWrap: 'break-word'
+                                    }}
+                                >
+                                    {messages.map(message => (
+                                        message.type === 1 ? (
+                                            <Typography key={message.id} sx={{ marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center' }}>
+                                                Студент {message.student.id} будет отсутствовать
+                                            </Typography>
+                                        ) : (
+                                            <Typography key={message.id} sx={{ backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px" }}>
+                                                {message.reason}
+                                            </Typography>
+                                        )
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </Box>
+
+                                {/* Поле ввода для нового сообщения */}
+                                <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="Введите сообщение..."
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                />
+
+                                <Box sx={{ display: 'flex', marginTop: "10px" }}>
+                                    {absenceEventId ? (
+                                        <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
+                                            {absenceButtonLoading ? <CircularProgress size={24} /> : 'Приду'}
+                                        </Button>
+                                    ) : (
+                                        <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
+                                            {absenceButtonLoading ? <CircularProgress size={24} /> : 'Не приду'}
+                                        </Button>
+                                    )}
+                                    <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
+                                        Отправить
+                                    </Button>
+                                </Box>
+                            </>
+                        )
+                    }
+
+
                 </Box>
             </Modal>
 
