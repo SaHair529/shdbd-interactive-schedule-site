@@ -217,7 +217,7 @@ const SchedulePage = ({userSessionData}) => {
     }, [openChat, messages])
 
     if (loading) {
-        return <FullscreenLoader />
+        return <FullscreenLoader loading={loading} />
     }
 
     if (error) {
@@ -284,69 +284,59 @@ const SchedulePage = ({userSessionData}) => {
                     borderRadius: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: chatLoading ? 'center' : 'inherit',
-                    alignItems: chatLoading ? 'center' : 'inherit',
                 }}>
+                    <FullscreenLoader loading={chatLoading} opacity={1} />
+                    <Box
+                        sx={{
+                            flexGrow: '1',
+                            overflowY: 'auto',
+                            mt: '10px',
+                            mb: '10px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            padding: '10px',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word'
+                        }}
+                    >
+                        {messages.map(message => (
+                            message.type === 1 ? (
+                                <Typography key={message.id} sx={{ marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center' }}>
+                                    Студент {message.student.id} будет отсутствовать
+                                </Typography>
+                            ) : (
+                                <Typography key={message.id} sx={{ backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px" }}>
+                                    {message.reason}
+                                </Typography>
+                            )
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </Box>
 
-                    {
-                        chatLoading ? (
-                            <CircularProgress />
+                    {/* Поле ввода для нового сообщения */}
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        placeholder="Введите сообщение..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+
+                    <Box sx={{ display: 'flex', marginTop: "10px" }}>
+                        {absenceEventId ? (
+                            <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
+                                {absenceButtonLoading ? <CircularProgress size={24} /> : 'Приду'}
+                            </Button>
                         ) : (
-                            <>
-                                <Box
-                                    sx={{
-                                        flexGrow: '1',
-                                        overflowY: 'auto',
-                                        mt: '10px',
-                                        mb: '10px',
-                                        border: '1px solid #ccc',
-                                        borderRadius: '4px',
-                                        padding: '10px',
-                                        wordWrap: 'break-word',
-                                        overflowWrap: 'break-word'
-                                    }}
-                                >
-                                    {messages.map(message => (
-                                        message.type === 1 ? (
-                                            <Typography key={message.id} sx={{ marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center' }}>
-                                                Студент {message.student.id} будет отсутствовать
-                                            </Typography>
-                                        ) : (
-                                            <Typography key={message.id} sx={{ backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px" }}>
-                                                {message.reason}
-                                            </Typography>
-                                        )
-                                    ))}
-                                    <div ref={messagesEndRef} />
-                                </Box>
-
-                                {/* Поле ввода для нового сообщения */}
-                                <TextField
-                                    variant="outlined"
-                                    fullWidth
-                                    placeholder="Введите сообщение..."
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                />
-
-                                <Box sx={{ display: 'flex', marginTop: "10px" }}>
-                                    {absenceEventId ? (
-                                        <Button variant="outlined" color="success" onClick={handlePresence} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
-                                            {absenceButtonLoading ? <CircularProgress size={24} /> : 'Приду'}
-                                        </Button>
-                                    ) : (
-                                        <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
-                                            {absenceButtonLoading ? <CircularProgress size={24} /> : 'Не приду'}
-                                        </Button>
-                                    )}
-                                    <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
-                                        Отправить
-                                    </Button>
-                                </Box>
-                            </>
-                        )
-                    }
+                            <Button variant="outlined" color="secondary" onClick={() => handleAbsence(selectedScheduleItem.id)} sx={{ flex: 0.3 }} disabled={absenceButtonLoading}>
+                                {absenceButtonLoading ? <CircularProgress size={24} /> : 'Не приду'}
+                            </Button>
+                        )}
+                        <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ flex: 1, marginLeft: '10px' }}>
+                            Отправить
+                        </Button>
+                    </Box>
 
 
                 </Box>
