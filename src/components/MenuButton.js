@@ -1,5 +1,5 @@
 import {Link, useLocation, useNavigate} from "react-router-dom";
-import {IconButton, Menu, MenuItem} from "@mui/material";
+import {IconButton, Menu, MenuItem, Typography} from "@mui/material";
 import {
     Event,
     ExitToApp,
@@ -10,7 +10,7 @@ import {
 import {useState} from "react";
 
 
-const MenuButton = ({darkMode, setDarkMode}) => {
+const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
     const location = useLocation()
     const navigate = useNavigate()
     const ignoredRoutes = ['/register', '/login']
@@ -52,6 +52,9 @@ const MenuButton = ({darkMode, setDarkMode}) => {
                 <GridView />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+                <MenuItem disabled>
+                    <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'center' }}>{ userSessionData.fullName.split(' ').slice(0,2).join(' ') }</Typography>
+                </MenuItem>
                 <MenuItem onClick={closeMenu} component={Link} to='/' ><Event sx={{mr: 1}} />Мои расписания</MenuItem>
                 <MenuItem onClick={toggleTheme}>
                     {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
