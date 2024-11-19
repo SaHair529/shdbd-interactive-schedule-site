@@ -8,7 +8,7 @@ import SchedulesListPage from "./pages/SchedulesListPage/SchedulesListPage";
 import MenuButton from "./components/MenuButton";
 import AdminProtectedRoute from "./pages/AdminProtectedRoute";
 import AdminScheduleListPage from "./pages/Admin/AdminScheduleListPage/AdminScheduleListPage";
-import AdminSchedulePage from "./pages/Admin/AdminNewSchedulePage/AdminSchedulePage";
+import AdminSchedulePage from "./pages/Admin/AdminSchedulePage/AdminSchedulePage";
 
 
 function App({darkMode, setDarkMode}) {
