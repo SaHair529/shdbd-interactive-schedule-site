@@ -176,7 +176,7 @@ const AdminSchedulePage = ({userSessionData}) => {
                                 </Paper>
                             </Grid2>
                         ))}
-                        <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper' onClick={() => { handleAddSubject(dayNumber) }} >
+                        <Paper sx={{ opacity: .4 }} elevation={3} className='subject-paper' onClick={() => { handleAddSubject(dayNumber) }} >
                             <Typography >+ Добавить урок</Typography>
                         </Paper>
                     </Grid2>
