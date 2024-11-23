@@ -18,6 +18,7 @@ import FullscreenLoader from "../../../components/FullscreenLoader";
 const AdminSchedulePage = ({userSessionData}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
+    const [subjects, setSubjects] = useState([])
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [subjectId, setSubjectId] = useState('')
@@ -27,12 +28,6 @@ const AdminSchedulePage = ({userSessionData}) => {
     const navigate = useNavigate()
 
     const [openCreateSubjectModal, setOpenCreateSubjectModal] = useState(false)
-
-    const subjects = [ // todo получать subjects из бд
-        { id: 1, name: 'Математика' },
-        { id: 2, name: 'Физика' },
-        { id: 3, name: 'Химия' },
-    ];
 
     const dayNumbersNaming = ['','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресение'] // В начале пустая строка, чтобы у понедельника индекс был равен 1
     const dayIcons = [null,
@@ -69,6 +64,32 @@ const AdminSchedulePage = ({userSessionData}) => {
         }
     }
 
+    const loadSubjects = async () => {
+        try {
+            const response = await api.get('/subject/list', {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                }
+            })
+            setSubjects(response.data)
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
+                navigate('/login')
+                return
+            }
+            else if (err.response.status === 404) {
+                setError('Предметы не найдены')
+                return err.response
+            }
+
+            setError(err)
+            console.error(err)
+            return null
+        }
+    }
+
     const loadSchedule = async () => {
         const response = await fetchSchedule()
 
@@ -85,8 +106,8 @@ const AdminSchedulePage = ({userSessionData}) => {
             response.scheduleItems = undefined
 
             setSchedule(response)
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     const handleAddSubject = (dayOfWeek) => {
@@ -126,6 +147,7 @@ const AdminSchedulePage = ({userSessionData}) => {
 
     useEffect(() => {
         loadSchedule()
+        loadSubjects()
     }, [id, userSessionData])
 
     if (loading) {
