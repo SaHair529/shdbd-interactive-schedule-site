@@ -192,6 +192,22 @@ const AdminSchedulePage = ({userSessionData}) => {
         setSubjectId('')
     }
 
+    const handleDeleteScheduleItem = async () => {
+        try {
+            const response = await api.delete(`/schedule/${selectedScheduleItemId}`, {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                }
+            })
+            if (response.status === 204) {
+                window.location.reload()
+            }
+        }
+        catch (error) {
+
+        }
+    }
+
     useEffect(() => {
         loadSchedule()
         loadSubjects()
@@ -371,9 +387,20 @@ const AdminSchedulePage = ({userSessionData}) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => {
+                                    if (window.confirm("Вы уверены, что хотите удалить этот предмет?")) {
+                                        handleDeleteScheduleItem()
+                                    }
+                                }}
+                            >
+                                Удалить
+                            </Button>
                             <Button type="submit" variant="contained" color="primary">
-                                Создать
+                                Обновить
                             </Button>
                         </Box>
                     </form>
