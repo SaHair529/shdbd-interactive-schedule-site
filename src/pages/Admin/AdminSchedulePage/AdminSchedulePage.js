@@ -19,6 +19,7 @@ const AdminSchedulePage = ({userSessionData}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [subjects, setSubjects] = useState([])
+    const [selectedScheduleItemId, setSelectedScheduleItemId] = useState(null)
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [subjectId, setSubjectId] = useState('')
@@ -28,6 +29,7 @@ const AdminSchedulePage = ({userSessionData}) => {
     const navigate = useNavigate()
 
     const [openCreateSubjectModal, setOpenCreateSubjectModal] = useState(false)
+    const [openUpdateSubjectModal, setOpenUpdateSubjectModal] = useState(false)
 
     const dayNumbersNaming = ['','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресение'] // В начале пустая строка, чтобы у понедельника индекс был равен 1
     const dayIcons = [null,
@@ -101,6 +103,10 @@ const AdminSchedulePage = ({userSessionData}) => {
                     hour: '2-digit',
                     minute: '2-digit'
                 })
+                scheduleItem['endTime'] = new Date(scheduleItem['endTime']).toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
                 response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
             })
             response.scheduleItems = undefined
@@ -142,8 +148,49 @@ const AdminSchedulePage = ({userSessionData}) => {
     const handleCloseCreateSubjectModal = () => {
         setOpenCreateSubjectModal(false)
         setDayOfWeek('')
+        setStartTime('')
+        setEndTime('')
     }
 
+    const handleClickScheduleItem = (clickedScheduleItem) => {
+        setSelectedScheduleItemId(clickedScheduleItem.id)
+        setDayOfWeek(clickedScheduleItem.dayOfWeek)
+        setStartTime(clickedScheduleItem.startTime)
+        setEndTime(clickedScheduleItem.endTime)
+        setSubjectId(clickedScheduleItem.subject.id)
+        setOpenUpdateSubjectModal(true)
+    }
+
+    const handleSubmitUpdateSubject = async () => {
+        try {
+            const response = await api.put(`/schedule/${selectedScheduleItemId}`,
+                {
+                    startTime: startTime+':00',
+                    endTime: endTime+':00',
+                    dayOfWeek: +dayOfWeek,
+                    subjectId: +subjectId,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+            if (response.status === 200) {
+            }
+        }
+        catch (error) {
+
+        }
+    }
+
+    const handleCloseUpdateSubjectModal = () => {
+        setOpenUpdateSubjectModal(false)
+        setDayOfWeek('')
+        setStartTime('')
+        setEndTime('')
+        setSubjectId('')
+    }
 
     useEffect(() => {
         loadSchedule()
@@ -190,7 +237,7 @@ const AdminSchedulePage = ({userSessionData}) => {
                         </Paper>
                         {schedule.sortedScheduleItems[dayNumber].map(scheduleItem => (
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
-                                <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper'>
+                                <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper' onClick={() => handleClickScheduleItem(scheduleItem)}>
                                     <Typography >{scheduleItem.subject.name}</Typography>
                                     <Paper sx={{position: 'absolute', right: 0, top: 8, px: 2, borderRadius: 0, bgcolor: '#B0BEC5', color: '#fff', display: 'flex', alignItems: 'center', fontSize: 13}}>
                                         {(scheduleItem.startTime)}
@@ -224,6 +271,70 @@ const AdminSchedulePage = ({userSessionData}) => {
                         Создать новый предмет
                     </Typography>
                     <form onSubmit={handleSubmitCreateSubject}>
+                        <TextField
+                            label="Время начала"
+                            type="time"
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            InputLabelProps={{shrink: true}}
+                            required
+                        />
+                        <TextField
+                            label="Время окончания"
+                            type="time"
+                            value={endTime}
+                            onChange={(e) => setEndTime(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            InputLabelProps={{shrink: true}}
+                            required
+                        />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel id="subject-select-label">Предмет</InputLabel>
+                            <Select
+                                labelId="subject-select-label"
+                                value={subjectId}
+                                onChange={(e) => setSubjectId(e.target.value)}
+                                label="Предмет"
+                                required
+                            >
+                                {subjects.map((subj) => (
+                                    <MenuItem key={subj.id} value={subj.id}>
+                                        {subj.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <Button type="submit" variant="contained" color="primary">
+                                Создать
+                            </Button>
+                        </Box>
+                    </form>
+                </Box>
+            </Modal>
+            <Modal open={openUpdateSubjectModal} onClose={handleCloseUpdateSubjectModal}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '90%',
+                    width: 500,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}>
+
+                    <Typography variant="h6" gutterBottom>
+                        Обновить предмет
+                    </Typography>
+                    <form onSubmit={handleSubmitUpdateSubject}>
                         <TextField
                             label="Время начала"
                             type="time"
