@@ -99,13 +99,16 @@ const AdminSchedulePage = ({userSessionData}) => {
         if (response.id) { // Если расписание найдено
             response.sortedScheduleItems = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
             response.scheduleItems.forEach(scheduleItem => {
+                console.log(scheduleItem['startTime'])
                 scheduleItem['startTime'] = new Date(scheduleItem['startTime']).toLocaleTimeString('en-GB', {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Europe/Moscow'
                 })
                 scheduleItem['endTime'] = new Date(scheduleItem['endTime']).toLocaleTimeString('en-GB', {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Europe/Moscow'
                 })
                 response.sortedScheduleItems[scheduleItem['dayOfWeek']].push(scheduleItem)
             })
