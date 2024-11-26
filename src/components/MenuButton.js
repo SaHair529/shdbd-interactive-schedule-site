@@ -36,18 +36,15 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
         closeMenu()
     }
 
-    if (hideMenu)
-        return
-
-    return (
+    const userMenu = (
         <>
             <IconButton onClick={openMenu} color='primary'
-                sx ={{
-                    position: 'fixed',
-                    top: 16,
-                    right: 50,
-                    zIndex: 1000
-                }}
+                        sx ={{
+                            position: 'fixed',
+                            top: 16,
+                            right: 50,
+                            zIndex: 1000
+                        }}
             >
                 <GridView />
             </IconButton>
@@ -64,6 +61,40 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
             </Menu>
         </>
     )
+
+    const adminMenu = (
+        <>
+            <IconButton onClick={openMenu} color='primary'
+                        sx ={{
+                            position: 'fixed',
+                            top: 16,
+                            right: 50,
+                            zIndex: 1000
+                        }}
+            >
+                <GridView />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+                <MenuItem disabled>
+                    <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'center' }}>{ userSessionData.fullName.split(' ').slice(0,2).join(' ') }</Typography>
+                </MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin' ><Event sx={{mr: 1}} />Список расписаний</MenuItem>
+                <MenuItem onClick={toggleTheme}>
+                    {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
+                    {darkMode ? 'Светлая тема' : 'Темная тема'}
+                </MenuItem>
+                <MenuItem onClick={logout} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
+            </Menu>
+        </>
+    )
+
+    if (hideMenu)
+        return
+
+    if (userSessionData['roles'].includes('ROLE_ADMIN'))
+        return adminMenu
+
+    return userMenu
 }
 
 export default MenuButton
