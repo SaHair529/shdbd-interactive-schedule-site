@@ -5,7 +5,8 @@ import {
     ExitToApp,
     GridView,
     NightsStay,
-    WbSunny
+    WbSunny,
+    Person
 } from "@mui/icons-material";
 import {useState} from "react";
 
@@ -78,7 +79,8 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                 <MenuItem disabled>
                     <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'center' }}>{ userSessionData.fullName.split(' ').slice(0,2).join(' ') }</Typography>
                 </MenuItem>
-                <MenuItem onClick={closeMenu} component={Link} to='/admin' ><Event sx={{mr: 1}} />Список расписаний</MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin' ><Event sx={{mr: 1}} />Расписания</MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin/users' ><Person sx={{mr: 1}} />Пользователи</MenuItem>
                 <MenuItem onClick={toggleTheme}>
                     {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
                     {darkMode ? 'Светлая тема' : 'Темная тема'}
