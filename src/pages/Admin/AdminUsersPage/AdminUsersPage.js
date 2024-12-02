@@ -8,13 +8,13 @@ import {
     TableBody,
     Container,
     Box,
-    Typography, TablePagination
+    Typography, TablePagination, Fab, Menu, MenuItem, ListItemText, ListItemIcon
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
-import {ErrorOutline} from "@mui/icons-material";
+import {ErrorOutline, MoreVert, PersonAdd} from "@mui/icons-material";
 
 
 const AdminUsersPage = ({userSessionData}) => {
@@ -22,6 +22,9 @@ const AdminUsersPage = ({userSessionData}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(25)
     const [totalUsers, setTotalUsers] = useState(0)
+
+    const [anchorEl, setAnchorEl] = useState(null)
+
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -65,6 +68,14 @@ const AdminUsersPage = ({userSessionData}) => {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(0)
+    }
+
+    const openUsersMenu = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const closeUsersMenu = () => {
+        setAnchorEl(null)
     }
 
     if (loading) {
@@ -127,6 +138,32 @@ const AdminUsersPage = ({userSessionData}) => {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
+
+                <Fab
+                    aria-label="add"
+                    size="small"
+                    color='primary'
+                    onClick={openUsersMenu}
+                    sx={{ position: 'fixed', bottom: 16, right: 50, zIndex: 1000 }}
+                >
+                    <MoreVert />
+                </Fab>
+                
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={closeUsersMenu}
+                    sx={{ transform: 'translateY(-50px)' }}
+                    >
+                    <MenuItem >
+                        <ListItemIcon>
+                            <PersonAdd/>
+                        </ListItemIcon>
+                        <ListItemText>Создать нового пользователя</ListItemText>
+                    </MenuItem>
+                </Menu>
+
+                
             </Container>
         </Box>
     )
