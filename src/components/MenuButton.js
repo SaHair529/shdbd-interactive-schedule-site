@@ -1,5 +1,5 @@
 import {Link, useLocation, useNavigate} from "react-router-dom";
-import {IconButton, Menu, MenuItem, Typography} from "@mui/material";
+import {Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography} from "@mui/material";
 import {
     Event,
     ExitToApp,
@@ -53,12 +53,28 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                 <MenuItem disabled>
                     <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'center' }}>{ userSessionData.fullName.split(' ').slice(0,2).join(' ') }</Typography>
                 </MenuItem>
-                <MenuItem onClick={closeMenu} component={Link} to='/' ><Event sx={{mr: 1}} />Мои расписания</MenuItem>
-                <MenuItem onClick={toggleTheme}>
-                    {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
-                    {darkMode ? 'Светлая тема' : 'Темная тема'}
+                <Divider/>
+                <MenuItem onClick={closeMenu} component={Link} to='/' >
+                    <ListItemIcon>
+                        <Event fontSize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Мои расписания</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={logout} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
+                <MenuItem onClick={toggleTheme}>
+                    <ListItemIcon>
+                        {darkMode ? <WbSunny fontSize='small' /> : <NightsStay fontSize='small' />}
+                    </ListItemIcon>
+                    <ListItemText>
+                        {darkMode ? 'Светлая тема' : 'Темная тема'}
+                    </ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={logout} sx={{color: 'red'}}>
+                    <ListItemIcon>
+                        <ExitToApp sx={{color: 'red'}} fontSize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Выход</ListItemText>
+                </MenuItem>
             </Menu>
         </>
     )
@@ -79,13 +95,34 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                 <MenuItem disabled>
                     <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'center' }}>{ userSessionData.fullName.split(' ').slice(0,2).join(' ') }</Typography>
                 </MenuItem>
-                <MenuItem onClick={closeMenu} component={Link} to='/admin' ><Event sx={{mr: 1}} />Расписания</MenuItem>
-                <MenuItem onClick={closeMenu} component={Link} to='/admin/users' ><Person sx={{mr: 1}} />Пользователи</MenuItem>
-                <MenuItem onClick={toggleTheme}>
-                    {darkMode ? <WbSunny sx={{ mr: 1 }} /> : <NightsStay sx={{ mr: 1 }} />}
-                    {darkMode ? 'Светлая тема' : 'Темная тема'}
+                <Divider />
+                <MenuItem onClick={closeMenu} component={Link} to='/admin' >
+                    <ListItemIcon>
+                        <Event fontSize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Расписания</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={logout} sx={{color: 'red'}}><ExitToApp sx={{mr: 1}} />Выход</MenuItem>
+                <MenuItem onClick={toggleTheme}>
+                    <ListItemIcon>
+                        {darkMode ? <WbSunny fontSize='small' /> : <NightsStay fontSize='small' />}
+                    </ListItemIcon>
+                    <ListItemText>
+                        {darkMode ? 'Светлая тема' : 'Темная тема'}
+                    </ListItemText>
+                </MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin/users' >
+                    <ListItemIcon>
+                        <Person fontsize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Пользователи</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={logout} sx={{color: 'red'}}>
+                    <ListItemIcon>
+                        <ExitToApp sx={{color: 'red'}} fontSize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Выход</ListItemText>
+                </MenuItem>
             </Menu>
         </>
     )
