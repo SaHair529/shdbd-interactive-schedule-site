@@ -8,7 +8,7 @@ import {
     TableBody,
     Container,
     Box,
-    Typography
+    Typography, TablePagination
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -19,22 +19,32 @@ import {ErrorOutline} from "@mui/icons-material";
 
 const AdminUsersPage = ({userSessionData}) => {
     const [users, setUsers] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(25)
+    const [totalUsers, setTotalUsers] = useState(0)
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
     const navigate = useNavigate()
 
     useEffect(() => {
         loadUsers()
-    }, userSessionData)
+    }, userSessionData, page, rowsPerPage)
 
     const loadUsers = async () => {
         try {
             const response = await api.get('/user', {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
+                },
+                params: {
+                    page: page+1,
+                    limit: rowsPerPage,
                 }
             })
             setUsers(response.data['users'])
+            setTotalUsers(response.data['meta']['total_users'])
             setLoading(false)
         }
         catch (err) {
@@ -46,6 +56,15 @@ const AdminUsersPage = ({userSessionData}) => {
 
             setError(err)
         }
+    }
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage)
+    }
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10))
+        setPage(0)
     }
 
     if (loading) {
@@ -99,6 +118,15 @@ const AdminUsersPage = ({userSessionData}) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[25, 50, 150]}
+                    component='div'
+                    count={totalUsers}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
             </Container>
         </Box>
     )
