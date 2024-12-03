@@ -8,7 +8,17 @@ import {
     TableBody,
     Container,
     Box,
-    Typography, TablePagination, Fab, Menu, MenuItem, ListItemText, ListItemIcon
+    Typography,
+    TablePagination,
+    Fab,
+    Menu,
+    MenuItem,
+    ListItemText,
+    ListItemIcon,
+    Modal,
+    TextField,
+    InputLabel,
+    FormControl, Select, Button, FormHelperText
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -23,6 +33,15 @@ const AdminUsersPage = ({userSessionData}) => {
     const [rowsPerPage, setRowsPerPage] = useState(25)
     const [totalUsers, setTotalUsers] = useState(0)
 
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [fullName, setFullName] = useState("")
+    const [role, setRole] = useState("")
+
+    const [emailError, setEmailError] = useState(null)
+
+    const [openCreateUserModal, setOpenCreateUserModal] = useState(false)
+
     const [anchorEl, setAnchorEl] = useState(null)
 
 
@@ -30,6 +49,11 @@ const AdminUsersPage = ({userSessionData}) => {
     const [error, setError] = useState(null);
 
     const navigate = useNavigate()
+
+    const ROLES = [
+        {id: 0, label: 'Ученик', value: 'ROLE_USER'},
+        {id: 1, label: 'Админ', value: 'ROLE_ADMIN'},
+    ]
 
     useEffect(() => {
         loadUsers()
@@ -76,6 +100,55 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const closeUsersMenu = () => {
         setAnchorEl(null)
+    }
+
+    const handleClickCreateUserButton = () => {
+        closeUsersMenu()
+        setOpenCreateUserModal(true)
+    }
+
+    const handleCloseCreateUserModal = () => {
+        setOpenCreateUserModal(false)
+        setEmail('')
+        setPassword('')
+        setFullName('')
+        setRole('')
+    }
+
+    const handleSubmitCreateUser = async (e) => {
+        e.preventDefault()
+
+        try {
+            const response = await api.post('/user/',
+                {
+                    email: email,
+                    password: password,
+                    fullName: fullName,
+                    role: role
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+            if (response.status === 201) {
+                window.location.reload()
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+                return
+            }
+            else if (err.response.status === 409) {
+                setEmailError('Пользователь с таким email уже существует')
+                return
+            }
+
+            setError(err)
+        }
     }
 
     if (loading) {
@@ -155,7 +228,7 @@ const AdminUsersPage = ({userSessionData}) => {
                     onClose={closeUsersMenu}
                     sx={{ transform: 'translateY(-50px)' }}
                     >
-                    <MenuItem >
+                    <MenuItem onClick={handleClickCreateUserButton} >
                         <ListItemIcon>
                             <PersonAdd/>
                         </ListItemIcon>
@@ -163,7 +236,79 @@ const AdminUsersPage = ({userSessionData}) => {
                     </MenuItem>
                 </Menu>
 
-                
+                <Modal open={openCreateUserModal} onClose={handleCloseCreateUserModal}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            Создать нового пользователя
+                        </Typography>
+                        <form onSubmit={handleSubmitCreateUser}>
+                            <TextField
+                                label="Email"
+                                type="text"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
+                            {emailError && (<FormHelperText sx={{color: '#E57373'}}>{emailError}</FormHelperText>)}
+                            <TextField
+                                label="Пароль"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
+                            <TextField
+                                label="ФИО"
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="role-select-label">Роль</InputLabel>
+                                <Select
+                                    labelId="role-select-label"
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value)}
+                                    label="Предмет"
+                                    required
+                                >
+                                    {ROLES.map((role) => (
+                                        <MenuItem key={role.id} value={role.value}>
+                                            {role.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Создать
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+
+
             </Container>
         </Box>
     )
