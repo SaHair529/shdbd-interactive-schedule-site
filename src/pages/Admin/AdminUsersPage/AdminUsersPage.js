@@ -56,18 +56,18 @@ const AdminUsersPage = ({userSessionData}) => {
     ]
 
     useEffect(() => {
-        loadUsers()
+        loadUsers(page, rowsPerPage)
     }, userSessionData, page, rowsPerPage)
 
-    const loadUsers = async () => {
+    const loadUsers = async (currentPage, currentRowsPerPage) => {
         try {
             const response = await api.get('/user', {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 },
                 params: {
-                    page: page+1,
-                    limit: rowsPerPage,
+                    page: currentPage+1,
+                    limit: currentRowsPerPage,
                 }
             })
             setUsers(response.data['users'])
@@ -87,11 +87,14 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage)
+        loadUsers(newPage, rowsPerPage)
     }
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(0)
+
+        loadUsers(0, parseInt(event.target.value, 10))
     }
 
     const openUsersMenu = (event) => {
