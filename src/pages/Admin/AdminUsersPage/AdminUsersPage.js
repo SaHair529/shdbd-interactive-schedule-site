@@ -30,7 +30,7 @@ import {ErrorOutline, MoreVert, PersonAdd} from "@mui/icons-material";
 const AdminUsersPage = ({userSessionData}) => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(25)
+    const [rowsPerPage, setRowsPerPage] = useState(15)
     const [totalUsers, setTotalUsers] = useState(0)
 
     const [email, setEmail] = useState("")
@@ -203,7 +203,7 @@ const AdminUsersPage = ({userSessionData}) => {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[25, 50, 150]}
+                    rowsPerPageOptions={[15, 50, 150]}
                     component='div'
                     count={totalUsers}
                     rowsPerPage={rowsPerPage}
