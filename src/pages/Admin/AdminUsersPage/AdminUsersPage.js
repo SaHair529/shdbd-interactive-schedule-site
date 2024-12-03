@@ -183,7 +183,7 @@ const AdminUsersPage = ({userSessionData}) => {
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
             <Container sx={{paddingTop: 6}}>
-                <TableContainer component={Paper}>
+                <TableContainer sx={{maxHeight: '90vh', overflow: 'auto'}} component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
