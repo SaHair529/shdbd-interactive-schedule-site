@@ -33,6 +33,8 @@ const AdminUsersPage = ({userSessionData}) => {
     const [rowsPerPage, setRowsPerPage] = useState(15)
     const [totalUsers, setTotalUsers] = useState(0)
 
+    const [searchQuery, setSearchQuery] = useState("")
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [fullName, setFullName] = useState("")
@@ -56,10 +58,10 @@ const AdminUsersPage = ({userSessionData}) => {
     ]
 
     useEffect(() => {
-        loadUsers(page, rowsPerPage)
-    }, userSessionData, page, rowsPerPage)
+        loadUsers(page, rowsPerPage, searchQuery)
+    }, [userSessionData, page, rowsPerPage, searchQuery])
 
-    const loadUsers = async (currentPage, currentRowsPerPage) => {
+    const loadUsers = async (currentPage, currentRowsPerPage, searchQuery) => {
         try {
             const response = await api.get('/user', {
                 headers: {
@@ -68,6 +70,7 @@ const AdminUsersPage = ({userSessionData}) => {
                 params: {
                     page: currentPage+1,
                     limit: currentRowsPerPage,
+                    searchQuery: searchQuery,
                 }
             })
             setUsers(response.data['users'])
@@ -87,14 +90,14 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage)
-        loadUsers(newPage, rowsPerPage)
+        loadUsers(newPage, rowsPerPage, searchQuery)
     }
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(0)
 
-        loadUsers(0, parseInt(event.target.value, 10))
+        loadUsers(0, parseInt(event.target.value, 10), searchQuery)
     }
 
     const openUsersMenu = (event) => {
@@ -183,7 +186,15 @@ const AdminUsersPage = ({userSessionData}) => {
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
             <Container sx={{paddingTop: 6}}>
-                <TableContainer sx={{maxHeight: '90vh', overflow: 'auto'}} component={Paper}>
+                <TextField
+                    label='Поиск'
+                    variant='outlined'
+                    fullWidth
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{marginBottom: 2}}
+                />
+                <TableContainer sx={{maxHeight: '80vh', overflow: 'auto'}} component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
