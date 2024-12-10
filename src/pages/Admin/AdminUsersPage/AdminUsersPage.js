@@ -26,11 +26,13 @@ import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
 import {ErrorOutline, MoreVert, PersonAdd} from "@mui/icons-material";
 
+const USERS_LIMIT = 14;
+
 
 const AdminUsersPage = ({userSessionData}) => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(15)
+    const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
     const [totalUsers, setTotalUsers] = useState(0)
 
     const [searchQuery, setSearchQuery] = useState("")
@@ -185,7 +187,7 @@ const AdminUsersPage = ({userSessionData}) => {
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-            <Container sx={{paddingTop: 6}}>
+            <Container sx={{paddingTop: 3}}>
                 <TextField
                     label='Поиск'
                     variant='outlined'
@@ -194,7 +196,7 @@ const AdminUsersPage = ({userSessionData}) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     sx={{marginBottom: 2}}
                 />
-                <TableContainer sx={{maxHeight: '80vh', overflow: 'auto'}} component={Paper}>
+                <TableContainer sx={{maxHeight: '85vh', overflow: 'auto'}} component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -217,7 +219,7 @@ const AdminUsersPage = ({userSessionData}) => {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[15, 50, 150]}
+                    rowsPerPageOptions={[USERS_LIMIT, 40, 140]}
                     component='div'
                     count={totalUsers}
                     rowsPerPage={rowsPerPage}
