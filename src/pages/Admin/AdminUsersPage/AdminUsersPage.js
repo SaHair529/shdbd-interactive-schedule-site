@@ -18,7 +18,7 @@ import {
     Modal,
     TextField,
     InputLabel,
-    FormControl, Select, Button, FormHelperText
+    FormControl, Select, Button, FormHelperText, Checkbox
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -34,6 +34,8 @@ const AdminUsersPage = ({userSessionData}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
     const [totalUsers, setTotalUsers] = useState(0)
+
+    const [selectedUsersIds, setSelectedUsersIds] = useState([])
 
     const [searchQuery, setSearchQuery] = useState("")
 
@@ -108,6 +110,23 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const closeUsersMenu = () => {
         setAnchorEl(null)
+    }
+
+    const handleSelectUser = (userId) => {
+        setSelectedUsersIds((prevSelected) =>
+            prevSelected.includes(userId)
+                ? prevSelected.filter(id => id !== userId)
+                : [...prevSelected, userId]
+        );
+    }
+
+    const handleSelectAllUsers = (e) => {
+        if (e.target.checked) {
+            const newSelectedUsersIds = users.map((user) => user.id)
+            setSelectedUsersIds(newSelectedUsersIds)
+            return
+        }
+        setSelectedUsersIds([])
     }
 
     const handleClickCreateUserButton = () => {
@@ -200,6 +219,13 @@ const AdminUsersPage = ({userSessionData}) => {
                     <Table>
                         <TableHead>
                             <TableRow>
+                                <TableCell padding='checkbox'>
+                                    <Checkbox
+                                        checked={selectedUsersIds.length === users.length}
+                                        onChange={handleSelectAllUsers}
+                                        inputProps={{ 'aria-label': 'select all users' }}
+                                    />
+                                </TableCell>
                                 <TableCell sx={{fontWeight: 'bold'}}>#</TableCell>
                                 <TableCell sx={{fontWeight: 'bold'}}>ФИО</TableCell>
                                 <TableCell sx={{fontWeight: 'bold'}}>Email</TableCell>
@@ -209,6 +235,12 @@ const AdminUsersPage = ({userSessionData}) => {
                         <TableBody>
                             {users.map((user) => (
                                 <TableRow key={user.id}>
+                                    <TableCell padding='checkbox'>
+                                        <Checkbox
+                                            checked={selectedUsersIds.includes(user.id)}
+                                            onChange={() => handleSelectUser(user.id)}
+                                        />
+                                    </TableCell>
                                     <TableCell>{user.id}</TableCell>
                                     <TableCell>{user.fullName}</TableCell>
                                     <TableCell>{user.email}</TableCell>
