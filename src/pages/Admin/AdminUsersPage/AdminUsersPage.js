@@ -18,13 +18,13 @@ import {
     Modal,
     TextField,
     InputLabel,
-    FormControl, Select, Button, FormHelperText, Checkbox
+    FormControl, Select, Button, FormHelperText, Checkbox, IconButton
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
-import {ErrorOutline, MoreVert, PersonAdd} from "@mui/icons-material";
+import {CalendarToday, Delete, ErrorOutline, MoreVert, PersonAdd, SwapHoriz} from "@mui/icons-material";
 
 const USERS_LIMIT = 14;
 
@@ -250,15 +250,43 @@ const AdminUsersPage = ({userSessionData}) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[USERS_LIMIT, 40, 140]}
-                    component='div'
-                    count={totalUsers}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton
+                            color='secondary'
+                            aria-label='delete'
+                            disabled={selectedUsersIds.length === 0}
+                        >
+                            <Delete/>
+                        </IconButton>
+                        <IconButton
+                            color='primary'
+                            aria-label='change schedule'
+                            disabled={selectedUsersIds.length === 0}
+                            sx={{ position: 'relative', padding: '8px' }}
+                        >
+                            <CalendarToday />
+                            <SwapHoriz
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    right: 0,
+                                    fontSize: '16px',
+                                }}
+                            />
+                        </IconButton>
+                    </Box>
+                    <TablePagination
+                        sx={{marginLeft: 'auto'}}
+                        rowsPerPageOptions={[USERS_LIMIT, 40, 140]}
+                        component='div'
+                        count={totalUsers}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
 
                 <Fab
                     aria-label="add"
