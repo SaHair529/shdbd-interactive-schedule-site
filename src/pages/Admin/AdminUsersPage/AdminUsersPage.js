@@ -18,7 +18,7 @@ import {
     Modal,
     TextField,
     InputLabel,
-    FormControl, Select, Button, FormHelperText, Checkbox, IconButton
+    FormControl, Select, Button, FormHelperText, Checkbox, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -35,6 +35,7 @@ const AdminUsersPage = ({userSessionData}) => {
     const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
     const [totalUsers, setTotalUsers] = useState(0)
 
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
 
     const [searchQuery, setSearchQuery] = useState("")
@@ -178,6 +179,28 @@ const AdminUsersPage = ({userSessionData}) => {
         }
     }
 
+    const handleConfirmDeleteUsers = async () => {
+        try {
+            await api.delete('/user/', {
+                data: {
+                    ids: selectedUsersIds
+                },
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                }
+            })
+            loadUsers(page, rowsPerPage, searchQuery)
+            setOpenDeleteConfirm(false)
+            setSelectedUsersIds([])
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+        }
+    }
+
     if (loading) {
         return <FullscreenLoader loading={loading} />
     }
@@ -256,6 +279,7 @@ const AdminUsersPage = ({userSessionData}) => {
                             color='secondary'
                             aria-label='delete'
                             disabled={selectedUsersIds.length === 0}
+                            onClick={() => setOpenDeleteConfirm(true)}
                         >
                             <Delete/>
                         </IconButton>
@@ -383,7 +407,17 @@ const AdminUsersPage = ({userSessionData}) => {
                         </form>
                     </Box>
                 </Modal>
-
+                
+                <Dialog open={openDeleteConfirm} onClose={() => setOpenDeleteConfirm(false)}>
+                    <DialogTitle>Подтверждение удаления</DialogTitle>
+                    <DialogContent>
+                        <Typography>Вы уверены, что хотите удалить выделенных пользователей?</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenDeleteConfirm(false)} color='primary'>Отмена</Button>
+                        <Button onClick={handleConfirmDeleteUsers} color='secondary'>Удалить</Button>
+                    </DialogActions>
+                </Dialog>
 
             </Container>
         </Box>
