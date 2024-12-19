@@ -37,6 +37,9 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
         closeMenu()
     }
 
+    if (hideMenu)
+        return
+
     const userMenu = (
         <>
             <IconButton onClick={openMenu} color='primary'
@@ -126,9 +129,6 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
             </Menu>
         </>
     )
-
-    if (hideMenu)
-        return
 
     if (userSessionData['roles'].includes('ROLE_ADMIN'))
         return adminMenu

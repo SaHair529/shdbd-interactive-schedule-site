@@ -19,7 +19,7 @@ function App({darkMode, setDarkMode}) {
         <div className="App">
             <Router>
 
-                <ProtectedRoute userSessionData={userSessionData} element={<MenuButton userSessionData={userSessionData} darkMode={darkMode} setDarkMode={setDarkMode} />} />
+                <MenuButton userSessionData={userSessionData} darkMode={darkMode} setDarkMode={setDarkMode} />
                 <Routes>
                     <Route path="/login" element={<LoginPage setUserSessionData={setUserSessionData} /> }/>
                     <Route path="/register" element={<RegisterPage/> }/>
