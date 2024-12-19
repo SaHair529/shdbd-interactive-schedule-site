@@ -38,6 +38,9 @@ const AdminUsersPage = ({userSessionData}) => {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
 
+    const [openChangeGroupModal, setOpenChangeGroupModal] = useState(false)
+    const [selectedGroup, setSelectedGroup] = useState(null)
+
     const [searchQuery, setSearchQuery] = useState("")
 
     const [email, setEmail] = useState("")
@@ -143,6 +146,11 @@ const AdminUsersPage = ({userSessionData}) => {
         setRole('')
     }
 
+    const handleCloseChangeGroupModal = () => {
+        setOpenChangeGroupModal(false)
+        setSelectedGroup(null)
+    }
+
     const handleSubmitCreateUser = async (e) => {
         e.preventDefault()
 
@@ -177,6 +185,10 @@ const AdminUsersPage = ({userSessionData}) => {
 
             setError(err)
         }
+    }
+
+    const handleSubmitChangeGroup = async (e) => {
+
     }
 
     const handleConfirmDeleteUsers = async () => {
@@ -226,6 +238,12 @@ const AdminUsersPage = ({userSessionData}) => {
             </Container>
         );
     }
+
+    const groups = [
+        {id: 1, name: '11 класс'},
+        {id: 2, name: '9 класс'},
+        {id: 3, name: '8 класс'},
+    ]
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -287,7 +305,7 @@ const AdminUsersPage = ({userSessionData}) => {
                             color='primary'
                             aria-label='change schedule'
                             disabled={selectedUsersIds.length === 0}
-                            sx={{ position: 'relative', padding: '8px' }}
+                            onClick={() => setOpenChangeGroupModal(true)}
                         >
                             <Group/>
                         </IconButton>
@@ -399,7 +417,51 @@ const AdminUsersPage = ({userSessionData}) => {
                         </form>
                     </Box>
                 </Modal>
-                
+
+                <Modal open={openChangeGroupModal} onClose={handleCloseChangeGroupModal}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            Сменить группу для выделенных пользователей
+                        </Typography>
+                        <form onSubmit={handleSubmitChangeGroup}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="group-select-label">Выберите группу</InputLabel>
+                                <Select
+                                    labelId="group-select-label"
+                                    value={selectedGroup}
+                                    onChange={(e) => setSelectedGroup(e.target.value)}
+                                    required
+                                >
+                                    {groups.map((group) => (
+                                        <MenuItem key={group.id} value={group.id}>
+                                            {group.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                <FormHelperText>Выберите группу для выделенных пользователей</FormHelperText>
+                            </FormControl>
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Сменить группу
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+
                 <Dialog open={openDeleteConfirm} onClose={() => setOpenDeleteConfirm(false)}>
                     <DialogTitle>Подтверждение удаления</DialogTitle>
                     <DialogContent>
