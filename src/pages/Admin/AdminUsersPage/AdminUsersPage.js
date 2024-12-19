@@ -24,7 +24,7 @@ import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
-import {CalendarToday, Delete, ErrorOutline, MoreVert, PersonAdd, SwapHoriz} from "@mui/icons-material";
+import {Delete, ErrorOutline, Group, MoreVert, PersonAdd} from "@mui/icons-material";
 
 const USERS_LIMIT = 14;
 
@@ -289,15 +289,7 @@ const AdminUsersPage = ({userSessionData}) => {
                             disabled={selectedUsersIds.length === 0}
                             sx={{ position: 'relative', padding: '8px' }}
                         >
-                            <CalendarToday />
-                            <SwapHoriz
-                                sx={{
-                                    position: 'absolute',
-                                    bottom: 0,
-                                    right: 0,
-                                    fontSize: '16px',
-                                }}
-                            />
+                            <Group/>
                         </IconButton>
                     </Box>
                     <TablePagination
