@@ -24,7 +24,7 @@ import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
-import {Delete, ErrorOutline, Group, MoreVert, PersonAdd} from "@mui/icons-material";
+import {Close, Delete, ErrorOutline, Group, MoreVert, PersonAdd} from "@mui/icons-material";
 
 const USERS_LIMIT = 14;
 
@@ -40,6 +40,7 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const [groups, setGroups] = useState([])
     const [openChangeGroupModal, setOpenChangeGroupModal] = useState(false)
+    const [openRemoveGroupModal, setOpenRemoveGroupModal] = useState(false)
     const [selectedGroup, setSelectedGroup] = useState(null)
 
     const [searchQuery, setSearchQuery] = useState("")
@@ -165,6 +166,11 @@ const AdminUsersPage = ({userSessionData}) => {
         setSelectedGroup(null)
     }
 
+    const handleCloseRemoveGroupModal = () => {
+        setOpenRemoveGroupModal(false)
+        setSelectedGroup(null)
+    }
+
     const handleSubmitCreateUser = async (e) => {
         e.preventDefault()
 
@@ -205,6 +211,33 @@ const AdminUsersPage = ({userSessionData}) => {
         e.preventDefault()
         try {
             const response = await api.post('/user/add_group',
+                {
+                    usersIds: selectedUsersIds,
+                    groupId: selectedGroup
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+            console.log('response',response)
+            if (response.status === 200) {
+                window.location.reload()
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+        }
+    }
+
+    const handleSubmitRemoveGroup = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await api.post('/user/remove_group',
                 {
                     usersIds: selectedUsersIds,
                     groupId: selectedGroup
@@ -325,20 +358,32 @@ const AdminUsersPage = ({userSessionData}) => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
+                            color='primary'
+                            aria-label='add schedule'
+                            disabled={selectedUsersIds.length === 0}
+                            onClick={() => setOpenChangeGroupModal(true)}
+                        >
+                            <Group />
+                        </IconButton>
+
+                        <IconButton
+                            color='secondary'
+                            aria-label='remove schedule'
+                            disabled={selectedUsersIds.length === 0}
+                            sx={{position: 'relative'}}
+                            onClick={() => setOpenRemoveGroupModal(true)}
+                        >
+                            <Group />
+                            <Close fontSize="small" sx={{position: 'absolute', bottom: 5, right: -3}} /> {/* Иконка крестика */}
+                        </IconButton>
+
+                        <IconButton
                             color='secondary'
                             aria-label='delete'
                             disabled={selectedUsersIds.length === 0}
                             onClick={() => setOpenDeleteConfirm(true)}
                         >
                             <Delete/>
-                        </IconButton>
-                        <IconButton
-                            color='primary'
-                            aria-label='change schedule'
-                            disabled={selectedUsersIds.length === 0}
-                            onClick={() => setOpenChangeGroupModal(true)}
-                        >
-                            <Group/>
                         </IconButton>
                     </Box>
                     <TablePagination
@@ -487,6 +532,49 @@ const AdminUsersPage = ({userSessionData}) => {
                             <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                                 <Button type="submit" variant="contained" color="primary">
                                     Сменить группу
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+                <Modal open={openRemoveGroupModal} onClose={handleCloseRemoveGroupModal}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            Исключить из группы выделенных пользователей
+                        </Typography>
+                        <form onSubmit={handleSubmitRemoveGroup}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="group-select-label">Выберите группу</InputLabel>
+                                <Select
+                                    labelId="group-select-label"
+                                    value={selectedGroup}
+                                    onChange={(e) => setSelectedGroup(e.target.value)}
+                                    required
+                                >
+                                    {groups.map((group) => (
+                                        <MenuItem key={group.id} value={group.id}>
+                                            {group.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                <FormHelperText>Выберите группу из которой исключить выделенных пользователей</FormHelperText>
+                            </FormControl>
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                                <Button type="submit" variant="contained" color="secondary">
+                                    Исключить из группы
                                 </Button>
                             </Box>
                         </form>
