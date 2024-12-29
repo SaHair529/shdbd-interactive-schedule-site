@@ -38,6 +38,7 @@ const AdminUsersPage = ({userSessionData}) => {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
 
+    const [groups, setGroups] = useState([])
     const [openChangeGroupModal, setOpenChangeGroupModal] = useState(false)
     const [selectedGroup, setSelectedGroup] = useState(null)
 
@@ -67,6 +68,7 @@ const AdminUsersPage = ({userSessionData}) => {
 
     useEffect(() => {
         loadUsers(page, rowsPerPage, searchQuery)
+        loadGroups()
     }, [userSessionData, page, rowsPerPage, searchQuery])
 
     const loadUsers = async (currentPage, currentRowsPerPage, searchQuery) => {
@@ -94,6 +96,18 @@ const AdminUsersPage = ({userSessionData}) => {
 
             setError(err)
         }
+    }
+
+    const loadGroups = async () => {
+        try {
+            const response = await api.get('/group', {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                },
+            })
+            setGroups(response.data)
+        }
+        catch (err) {}
     }
 
     const handleChangePage = (event, newPage) => {
@@ -188,7 +202,30 @@ const AdminUsersPage = ({userSessionData}) => {
     }
 
     const handleSubmitChangeGroup = async (e) => {
-
+        e.preventDefault()
+        try {
+            const response = await api.post('/user/add_group',
+                {
+                    usersIds: selectedUsersIds,
+                    groupId: selectedGroup
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+            console.log('response',response)
+            if (response.status === 200) {
+                window.location.reload()
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+        }
     }
 
     const handleConfirmDeleteUsers = async () => {
@@ -238,12 +275,6 @@ const AdminUsersPage = ({userSessionData}) => {
             </Container>
         );
     }
-
-    const groups = [
-        {id: 1, name: '11 класс'},
-        {id: 2, name: '9 класс'},
-        {id: 3, name: '8 класс'},
-    ]
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
