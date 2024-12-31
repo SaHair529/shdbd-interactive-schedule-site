@@ -18,13 +18,31 @@ import {
     Modal,
     TextField,
     InputLabel,
-    FormControl, Select, Button, FormHelperText, Checkbox, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
+    FormControl,
+    Select,
+    Button,
+    FormHelperText,
+    Checkbox,
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    InputAdornment
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
-import {Close, Delete, ErrorOutline, Group, MoreVert, PersonAdd} from "@mui/icons-material";
+import {
+    Close,
+    Delete,
+    ErrorOutline,
+    FilterAlt,
+    Group,
+    MoreVert,
+    PersonAdd
+} from "@mui/icons-material";
 
 const USERS_LIMIT = 14;
 
@@ -44,6 +62,9 @@ const AdminUsersPage = ({userSessionData}) => {
     const [selectedGroup, setSelectedGroup] = useState(null)
 
     const [searchQuery, setSearchQuery] = useState("")
+
+    const [openFilterModal, setOpenFilterModal] = useState(false)
+    const [selectedFilterRoles, setSelectedFilterRoles] = useState([])
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -283,6 +304,30 @@ const AdminUsersPage = ({userSessionData}) => {
         }
     }
 
+    const handleApplyFilters = async () => {
+
+    }
+
+    const handleChangeRoleFilter = (event) => {
+        const {
+            target: { value }
+        } = event;
+
+        const valueArray = typeof value === 'string' ? value.split(',') : value;
+
+        setSelectedFilterRoles((prevSelected) => {
+            const newSelected = [...prevSelected];
+            valueArray.forEach((role) => {
+                if (newSelected.includes(role)) {
+                    newSelected.splice(newSelected.indexOf(role), 1);
+                } else {
+                    newSelected.push(role);
+                }
+            });
+            return newSelected;
+        });
+    }
+
     if (loading) {
         return <FullscreenLoader loading={loading} />
     }
@@ -319,6 +364,15 @@ const AdminUsersPage = ({userSessionData}) => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     sx={{marginBottom: 2}}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setOpenFilterModal(true)}>
+                                    <FilterAlt />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
                 />
                 <TableContainer sx={{maxHeight: '85vh', overflow: 'auto'}} component={Paper}>
                     <Table>
@@ -575,6 +629,59 @@ const AdminUsersPage = ({userSessionData}) => {
                             <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                                 <Button type="submit" variant="contained" color="secondary">
                                     Исключить из группы
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+                <Modal open={openFilterModal} onClose={() => setOpenFilterModal(false)}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            Фильтрация пользователей
+                        </Typography>
+                        <form onSubmit={handleApplyFilters}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="role-filter-label">Роль</InputLabel>
+                                <Select
+                                    labelId="role-filter-label"
+                                    value={selectedFilterRoles}
+                                    onChange={handleChangeRoleFilter}
+                                    renderValue={(selected) => {
+                                        let value = ''
+                                        const ROLES_MAP = {
+                                            ROLE_USER: 'Ученик',
+                                            ROLE_ADMIN: 'Админ'
+                                        }
+                                        for (let i = 0; i < selected.length; i++) {
+                                            value += ROLES_MAP[selected[i]]+', '
+                                        }
+                                        return value.slice(0, -2)
+                                    }}
+                                >
+                                    {ROLES.map((role) => (
+                                        <MenuItem key={role.id} value={role.value}>
+                                            <Checkbox checked={selectedFilterRoles.indexOf(role.value) > -1} />
+                                            <ListItemText primary={role.label} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Подтвердить
                                 </Button>
                             </Box>
                         </form>
