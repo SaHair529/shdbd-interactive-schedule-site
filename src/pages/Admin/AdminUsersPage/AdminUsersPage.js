@@ -65,6 +65,7 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const [openFilterModal, setOpenFilterModal] = useState(false)
     const [selectedFilterRoles, setSelectedFilterRoles] = useState([])
+    const [selectedFilterGroups, setSelectedFilterGroups] = useState([])
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -311,21 +312,33 @@ const AdminUsersPage = ({userSessionData}) => {
     const handleChangeRoleFilter = (event) => {
         const {
             target: { value }
-        } = event;
-
-        const valueArray = typeof value === 'string' ? value.split(',') : value;
+        } = event
 
         setSelectedFilterRoles((prevSelected) => {
-            const newSelected = [...prevSelected];
-            valueArray.forEach((role) => {
-                if (newSelected.includes(role)) {
-                    newSelected.splice(newSelected.indexOf(role), 1);
-                } else {
-                    newSelected.push(role);
-                }
-            });
-            return newSelected;
-        });
+            const newSelected = [...prevSelected]
+            if (newSelected.includes(value)) {
+                newSelected.splice(newSelected.indexOf(value), 1)
+            } else {
+                newSelected.push(value)
+            }
+            return newSelected
+        })
+    }
+
+    const handleChangeGroupFilter = (event) => {
+        const {
+            target: { value }
+        } = event
+
+        setSelectedFilterGroups((prevSelected) => {
+            const newSelected = [...prevSelected]
+            if (newSelected.includes(value)) {
+                newSelected.splice(newSelected.indexOf(value), 1)
+            } else {
+                newSelected.push(value)
+            }
+            return newSelected
+        })
     }
 
     if (loading) {
@@ -675,6 +688,33 @@ const AdminUsersPage = ({userSessionData}) => {
                                         <MenuItem key={role.id} value={role.value}>
                                             <Checkbox checked={selectedFilterRoles.indexOf(role.value) > -1} />
                                             <ListItemText primary={role.label} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="group-filter-label">Группа</InputLabel>
+                                <Select
+                                    labelId="group-filter-label"
+                                    value={selectedFilterGroups}
+                                    onChange={handleChangeGroupFilter}
+                                    renderValue={(selected) => {
+                                        let value = ''
+                                        for (let i = 0; i < selected.length; i++) {
+                                            for (let j = 0; j < groups.length; j++) {
+                                                if (groups[j]['id'] === selected[i]) {
+                                                    value += groups[j]['name']+', '
+                                                }
+                                            }
+                                        }
+                                        return value.slice(0, -2)
+                                    }}
+                                >
+                                    {groups.map((group) => (
+                                        <MenuItem key={group.id} value={group.id}>
+                                            <Checkbox checked={selectedFilterGroups.indexOf(group.id) > -1} />
+                                            <ListItemText primary={group.name} />
                                         </MenuItem>
                                     ))}
                                 </Select>
