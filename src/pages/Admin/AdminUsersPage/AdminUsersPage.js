@@ -64,7 +64,6 @@ const AdminUsersPage = ({userSessionData}) => {
     const [searchQuery, setSearchQuery] = useState("")
 
     const [openFilterModal, setOpenFilterModal] = useState(false)
-    const [selectedFilterRoles, setSelectedFilterRoles] = useState([])
     const [selectedFilterGroups, setSelectedFilterGroups] = useState([])
 
     const [email, setEmail] = useState("")
@@ -92,11 +91,15 @@ const AdminUsersPage = ({userSessionData}) => {
     useEffect(() => {
         loadUsers(page, rowsPerPage, searchQuery)
         loadGroups()
-    }, [userSessionData, page, rowsPerPage, searchQuery])
+    }, [userSessionData, page, rowsPerPage, searchQuery, selectedFilterGroups])
 
     const loadUsers = async (currentPage, currentRowsPerPage, searchQuery) => {
         try {
-            const response = await api.get('/user', {
+            const filterObj = {
+                groups: selectedFilterGroups,
+            }
+            const filterQueryString = encodeURIComponent(JSON.stringify(filterObj))
+            const response = await api.get('/user?filter='+filterQueryString, {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 },
@@ -305,24 +308,9 @@ const AdminUsersPage = ({userSessionData}) => {
         }
     }
 
-    const handleApplyFilters = async () => {
-
-    }
-
-    const handleChangeRoleFilter = (event) => {
-        const {
-            target: { value }
-        } = event
-
-        setSelectedFilterRoles((prevSelected) => {
-            const newSelected = [...prevSelected]
-            if (newSelected.includes(value)) {
-                newSelected.splice(newSelected.indexOf(value), 1)
-            } else {
-                newSelected.push(value)
-            }
-            return newSelected
-        })
+    const handleApplyFilters = async (event) => {
+        event.preventDefault()
+        setOpenFilterModal(false)
     }
 
     const handleChangeGroupFilter = (event) => {
@@ -666,33 +654,6 @@ const AdminUsersPage = ({userSessionData}) => {
                             Фильтрация пользователей
                         </Typography>
                         <form onSubmit={handleApplyFilters}>
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel id="role-filter-label">Роль</InputLabel>
-                                <Select
-                                    labelId="role-filter-label"
-                                    value={selectedFilterRoles}
-                                    onChange={handleChangeRoleFilter}
-                                    renderValue={(selected) => {
-                                        let value = ''
-                                        const ROLES_MAP = {
-                                            ROLE_USER: 'Ученик',
-                                            ROLE_ADMIN: 'Админ'
-                                        }
-                                        for (let i = 0; i < selected.length; i++) {
-                                            value += ROLES_MAP[selected[i]]+', '
-                                        }
-                                        return value.slice(0, -2)
-                                    }}
-                                >
-                                    {ROLES.map((role) => (
-                                        <MenuItem key={role.id} value={role.value}>
-                                            <Checkbox checked={selectedFilterRoles.indexOf(role.value) > -1} />
-                                            <ListItemText primary={role.label} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-
                             <FormControl fullWidth margin="normal">
                                 <InputLabel id="group-filter-label">Группа</InputLabel>
                                 <Select
