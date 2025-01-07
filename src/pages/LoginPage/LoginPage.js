@@ -24,6 +24,10 @@ const LoginPage = ({ setUserSessionData }) => {
             if (response.status === 200) {
                 setUserSessionData(response.data)
                 localStorage.setItem('userSessionData', JSON.stringify(response.data))
+                if (response.data['roles'].includes('ROLE_ADMIN')) {
+                    navigate('/admin')
+                    return
+                }
                 navigate('/')
             }
         } catch (error) {
