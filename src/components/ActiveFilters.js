@@ -9,6 +9,8 @@ function ActiveFilters({filters, onDelete}) {
                     key={key}
                     label={filters[key]['label']}
                     onDelete={() => onDelete(key)}
+                    size='small'
+                    style={{ margin: '2px' }}
                 />
             ))}
         </div>
