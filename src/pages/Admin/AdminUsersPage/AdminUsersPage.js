@@ -43,6 +43,7 @@ import {
     MoreVert,
     PersonAdd
 } from "@mui/icons-material";
+import ActiveFilters from "../../../components/ActiveFilters";
 
 const USERS_LIMIT = 14;
 
@@ -65,6 +66,7 @@ const AdminUsersPage = ({userSessionData}) => {
 
     const [openFilterModal, setOpenFilterModal] = useState(false)
     const [selectedFilterGroups, setSelectedFilterGroups] = useState([])
+    const [activeFilters, setActiveFilters] = useState({})
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -322,11 +324,33 @@ const AdminUsersPage = ({userSessionData}) => {
             const newSelected = [...prevSelected]
             if (newSelected.includes(value)) {
                 newSelected.splice(newSelected.indexOf(value), 1)
+                setActiveFilters((prevActive) => {
+                    delete prevActive.groups
+                    return prevActive
+                })
             } else {
                 newSelected.push(value)
+                setActiveFilters((prevActive) => {
+                    prevActive.groups = {}
+                    prevActive.groups.label = 'Группы'
+                    return prevActive
+                })
             }
             return newSelected
         })
+    }
+
+    const handleDeleteFilter = (filterKey) => {
+        setActiveFilters((prevActive) => {
+            delete prevActive[filterKey]
+            return prevActive
+        })
+
+        switch (filterKey) {
+            case 'groups':
+                setSelectedFilterGroups([])
+                break
+        }
     }
 
     if (loading) {
@@ -364,7 +388,7 @@ const AdminUsersPage = ({userSessionData}) => {
                     fullWidth
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    sx={{marginBottom: 2}}
+                    sx={{marginBottom: 1}}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -375,6 +399,7 @@ const AdminUsersPage = ({userSessionData}) => {
                         )
                     }}
                 />
+                <ActiveFilters filters={activeFilters} onDelete={handleDeleteFilter}  />
                 <TableContainer sx={{maxHeight: '85vh', overflow: 'auto'}} component={Paper}>
                     <Table>
                         <TableHead>
