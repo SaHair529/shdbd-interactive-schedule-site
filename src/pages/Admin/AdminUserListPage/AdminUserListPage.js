@@ -419,7 +419,12 @@ const AdminUserListPage = ({userSessionData}) => {
                         </TableHead>
                         <TableBody>
                             {users.map((user) => (
-                                <TableRow key={user.id}>
+                                <TableRow key={user.id} sx={{
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        opacity: .7
+                                    }
+                                }}>
                                     <TableCell padding='checkbox'>
                                         <Checkbox
                                             checked={selectedUsersIds.includes(user.id)}
