@@ -48,7 +48,7 @@ import ActiveFilters from "../../../components/ActiveFilters";
 const USERS_LIMIT = 14;
 
 
-const AdminUsersPage = ({userSessionData}) => {
+const AdminUserListPage = ({userSessionData}) => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
@@ -730,4 +730,4 @@ const AdminUsersPage = ({userSessionData}) => {
     )
 }
 
-export default AdminUsersPage
+export default AdminUserListPage

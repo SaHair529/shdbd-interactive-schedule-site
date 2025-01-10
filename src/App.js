@@ -9,7 +9,7 @@ import MenuButton from "./components/MenuButton";
 import AdminProtectedRoute from "./pages/AdminProtectedRoute";
 import AdminScheduleListPage from "./pages/Admin/AdminScheduleListPage/AdminScheduleListPage";
 import AdminSchedulePage from "./pages/Admin/AdminSchedulePage/AdminSchedulePage";
-import AdminUsersPage from "./pages/Admin/AdminUsersPage/AdminUsersPage";
+import AdminUserListPage from "./pages/Admin/AdminUserListPage/AdminUserListPage";
 
 
 function App({darkMode, setDarkMode}) {
@@ -29,7 +29,7 @@ function App({darkMode, setDarkMode}) {
 
                     <Route path="/admin" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminScheduleListPage userSessionData={userSessionData} />} />}/>
                     <Route path="/admin/schedule/:id" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminSchedulePage userSessionData={userSessionData} />} />}/>
-                    <Route path="/admin/users" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminUsersPage userSessionData={userSessionData} />} />}/>
+                    <Route path="/admin/users" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminUserListPage userSessionData={userSessionData} />} />}/>
                 </Routes>
             </Router>
         </div>
