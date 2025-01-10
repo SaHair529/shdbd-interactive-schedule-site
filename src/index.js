@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -8,9 +8,16 @@ import getTheme from "./theme";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const Main = () => {
-    const [darkMode, setDarkMode] = useState(false)
+    const [darkMode, setDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode')
+        return savedMode === 'true'
+    })
 
     const theme = getTheme(darkMode)
+
+    useEffect(() => {
+        localStorage.setItem('darkMode', darkMode)
+    }, [darkMode])
 
     return (
         <ThemeProvider theme={theme}>
