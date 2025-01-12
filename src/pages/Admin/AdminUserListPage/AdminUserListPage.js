@@ -28,7 +28,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    InputAdornment
+    InputAdornment, Drawer, FormControlLabel, FormGroup
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -53,6 +53,8 @@ const AdminUserListPage = ({userSessionData}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
     const [totalUsers, setTotalUsers] = useState(0)
+
+    const [selectedUser, setSelectedUser] = useState(null)
 
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
@@ -180,6 +182,66 @@ const AdminUserListPage = ({userSessionData}) => {
         setOpenCreateUserModal(true)
     }
 
+    const handleClickUserRow = async (userId) => {
+        try {
+            const response = await api.get('/user/'+userId, {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                },
+            })
+            setSelectedUser(response.data)
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+                return
+            }
+
+            setError(err)
+        }
+    }
+
+    const handleChangeSelectedUser = (e) => {
+        const { name, value } = e.target
+
+        if (name === 'roles') {
+            setSelectedUser((prevData) => {
+                const roles = prevData.roles.includes(value)
+                    ? prevData.roles.filter(role => role !== value)
+                    : [...prevData.roles, value]
+                return { ...prevData, roles }
+            })
+            return
+        }
+
+        if (name === 'groups') {
+            setSelectedUser((prevData) => {
+                const groupExists = prevData.groups.some(group => group.id === +value)
+
+                if (groupExists) {
+                    const updatedGroups = prevData.groups.filter(group => group.id !== +value)
+                    return {
+                        ...prevData,
+                        groups: updatedGroups,
+                    }
+                } else {
+                    const newGroup = { id: +value }
+                    return {
+                        ...prevData,
+                        groups: [...prevData.groups, newGroup],
+                    }
+                }
+            })
+            return
+        }
+
+        setSelectedUser((prevData) => ({
+            ...prevData,
+            [name]: value
+        }))
+    }
+
     const handleCloseCreateUserModal = () => {
         setOpenCreateUserModal(false)
         setEmail('')
@@ -196,6 +258,14 @@ const AdminUserListPage = ({userSessionData}) => {
     const handleCloseRemoveGroupModal = () => {
         setOpenRemoveGroupModal(false)
         setSelectedGroup(null)
+    }
+
+    const handleCloseSelectedUserDrawer = () => {
+        setSelectedUser(null)
+    }
+
+    const handleUpdateUser = () => {
+        // TODO
     }
 
     const handleSubmitCreateUser = async (e) => {
@@ -419,7 +489,11 @@ const AdminUserListPage = ({userSessionData}) => {
                         </TableHead>
                         <TableBody>
                             {users.map((user) => (
-                                <TableRow key={user.id} sx={{
+                                <TableRow key={user.id} onClick={(e) => {
+                                    if (e.target.type)
+                                        return
+                                    handleClickUserRow(user.id)
+                                }} sx={{
                                     cursor: 'pointer',
                                     '&:hover': {
                                         opacity: .7
@@ -731,6 +805,77 @@ const AdminUserListPage = ({userSessionData}) => {
                 </Dialog>
 
             </Container>
+
+            {selectedUser && (
+                <Drawer anchor='right' open={selectedUser} onClose={handleCloseSelectedUserDrawer}>
+                    <Box sx={{width: 300, padding: 2,height: '100%', display: 'flex', flexDirection: 'column'}}>
+                        <TextField
+                            label="ФИО"
+                            variant="outlined"
+                            fullWidth
+                            name="fullName"
+                            value={selectedUser.fullName}
+                            onChange={handleChangeSelectedUser}
+                            sx={{ marginBottom: 2 }}
+                        />
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            fullWidth
+                            name="email"
+                            value={selectedUser.email}
+                            onChange={handleChangeSelectedUser}
+                            sx={{ marginBottom: 2 }}
+                        />
+                        <Box>
+                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                                <Typography variant="subtitle1">Роли</Typography>
+                                <FormGroup>
+                                    {ROLES.map((role) => (
+                                        <FormControlLabel
+                                            key={role.value}
+                                            control={
+                                                <Checkbox
+                                                    checked={selectedUser.roles.includes(role.value)}
+                                                    onChange={handleChangeSelectedUser}
+                                                    name="roles"
+                                                    value={role.value}
+                                                />
+                                            }
+                                            label={role.label}
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </FormControl>
+                        </Box>
+                        <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                            <Typography variant="subtitle1">Группы</Typography>
+                            <FormGroup>
+                                {groups.map((group) => (
+                                    <FormControlLabel
+                                        key={role.value}
+                                        control={
+                                            <Checkbox
+                                                checked={selectedUser.groups.some(g => g.id === group.id)}
+                                                onChange={handleChangeSelectedUser}
+                                                name="groups"
+                                                value={group.id}
+                                            />
+                                        }
+                                        label={group.name}
+                                    />
+                                ))}
+                            </FormGroup>
+                        </FormControl>
+
+                        <Box sx={{ marginTop: 'auto' }} >
+                            <Button fullWidth variant="contained" color="primary" onClick={handleUpdateUser}>
+                                Сохранить изменения
+                            </Button>
+                        </Box>
+                    </Box>
+                </Drawer>
+            )}
         </Box>
     )
 }
