@@ -54,7 +54,8 @@ const AdminUserListPage = ({userSessionData}) => {
     const [rowsPerPage, setRowsPerPage] = useState(USERS_LIMIT)
     const [totalUsers, setTotalUsers] = useState(0)
 
-    const [selectedUser, setSelectedUser] = useState(null)
+    const [openUpdateUserDrawer, setOpenUpdateUserDrawer] = useState(false)
+    const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [] })
 
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
@@ -190,6 +191,7 @@ const AdminUserListPage = ({userSessionData}) => {
                 },
             })
             setSelectedUser(response.data)
+            setOpenUpdateUserDrawer(true)
         }
         catch (err) {
             if (err.response.status === 401) {
@@ -261,7 +263,8 @@ const AdminUserListPage = ({userSessionData}) => {
     }
 
     const handleCloseSelectedUserDrawer = () => {
-        setSelectedUser(null)
+        setOpenUpdateUserDrawer(false)
+        setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
     }
 
     const handleUpdateUser = () => {
@@ -806,8 +809,7 @@ const AdminUserListPage = ({userSessionData}) => {
 
             </Container>
 
-            {selectedUser && (
-                <Drawer anchor='right' open={selectedUser} onClose={handleCloseSelectedUserDrawer}>
+                <Drawer anchor='right' open={openUpdateUserDrawer} onClose={handleCloseSelectedUserDrawer}>
                     <Box sx={{width: 300, padding: 2,height: '100%', display: 'flex', flexDirection: 'column'}}>
                         <TextField
                             label="ФИО"
@@ -875,7 +877,6 @@ const AdminUserListPage = ({userSessionData}) => {
                         </Box>
                     </Box>
                 </Drawer>
-            )}
         </Box>
     )
 }
