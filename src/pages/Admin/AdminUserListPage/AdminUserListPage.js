@@ -429,7 +429,9 @@ const AdminUserListPage = ({userSessionData}) => {
             if (newSelected.includes(value)) {
                 newSelected.splice(newSelected.indexOf(value), 1)
                 setActiveFilters((prevActive) => {
-                    delete prevActive.groups
+                    if (!newSelected.length) {
+                        delete prevActive.groups
+                    }
                     return prevActive
                 })
             } else {
