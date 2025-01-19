@@ -28,7 +28,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    InputAdornment, Drawer, FormControlLabel, FormGroup
+    InputAdornment, Drawer, FormControlLabel, FormGroup, Alert
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -55,6 +55,7 @@ const AdminUserListPage = ({userSessionData}) => {
     const [totalUsers, setTotalUsers] = useState(0)
 
     const [openUpdateUserDrawer, setOpenUpdateUserDrawer] = useState(false)
+    const [updateUserErrorMessage, setUpdateUserErrorMessage] = useState(null)
     const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [] })
 
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
@@ -292,7 +293,11 @@ const AdminUserListPage = ({userSessionData}) => {
             if (err.response.status === 401) {
                 localStorage.removeItem('userSessionData')
                 navigate('/login')
-                return
+            }
+            else if (err.response.status === 400) {
+                if (err.response.data['error']) {
+                    setUpdateUserErrorMessage(err.response.data['error'])
+                }
             }
         }
     }
@@ -895,6 +900,12 @@ const AdminUserListPage = ({userSessionData}) => {
                                 ))}
                             </FormGroup>
                         </FormControl>
+
+                        {updateUserErrorMessage && (
+                            <Alert severity='error'>
+                                {updateUserErrorMessage}
+                            </Alert>
+                        )}
 
                         <Box sx={{ marginTop: 'auto' }} >
                             <Button fullWidth variant="contained" color="primary" onClick={() => handleUpdateUser(selectedUser.id)}>
