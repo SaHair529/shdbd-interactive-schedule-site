@@ -267,8 +267,34 @@ const AdminUserListPage = ({userSessionData}) => {
         setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
     }
 
-    const handleUpdateUser = () => {
-        // TODO
+    const handleUpdateUser = async (id) => {
+        try {
+            const response = await api.post('/user/'+id,
+                selectedUser,
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+
+            if (response.status === 200) {
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === id ? { ...user, ...selectedUser } : user
+                    )
+                )
+                setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
+                setOpenUpdateUserDrawer(false)
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+                return
+            }
+        }
     }
 
     const handleSubmitCreateUser = async (e) => {
@@ -871,7 +897,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         </FormControl>
 
                         <Box sx={{ marginTop: 'auto' }} >
-                            <Button fullWidth variant="contained" color="primary" onClick={handleUpdateUser}>
+                            <Button fullWidth variant="contained" color="primary" onClick={() => handleUpdateUser(selectedUser.id)}>
                                 Сохранить изменения
                             </Button>
                         </Box>
