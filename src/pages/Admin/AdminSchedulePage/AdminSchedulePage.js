@@ -285,7 +285,7 @@ const AdminSchedulePage = ({userSessionData}) => {
                     flexDirection: 'column',
                 }}>
 
-                    <Typography variant="h6" gutterBottom>
+                    <Typography color='text.secondary' variant="h6" gutterBottom>
                         Создать новый предмет
                     </Typography>
                     <form onSubmit={handleSubmitCreateSubject}>
@@ -349,7 +349,7 @@ const AdminSchedulePage = ({userSessionData}) => {
                     flexDirection: 'column',
                 }}>
 
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="h6" color='text.secondary' gutterBottom>
                         Обновить предмет
                     </Typography>
                     <form onSubmit={handleSubmitUpdateSubject}>

@@ -257,7 +257,7 @@ const SchedulePage = ({userSessionData}) => {
                         {schedule.sortedScheduleItems[dayNumber].map(scheduleItem => (
                             <Grid2 item xs={12} sx={{flexGrow: 1}} key={scheduleItem.id}>
                                 <Paper sx={{position: 'relative'}} elevation={3} className='subject-paper' onClick={() => handleSubjectClick(scheduleItem)}>
-                                    <Typography >{scheduleItem.subject.name}</Typography>
+                                    <Typography color='text.secondary' >{scheduleItem.subject.name}</Typography>
                                     <Paper sx={{position: 'absolute', right: 0, top: 8, px: 2, borderRadius: 0, bgcolor: '#B0BEC5', color: '#fff', display: 'flex', alignItems: 'center', fontSize: 13}}>
                                         {(scheduleItem.startTime)}
                                     </Paper>

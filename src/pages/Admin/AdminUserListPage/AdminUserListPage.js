@@ -704,7 +704,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
                             Сменить группу для выделенных пользователей
                         </Typography>
                         <form onSubmit={handleSubmitChangeGroup}>
@@ -747,7 +747,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
                             Исключить из группы выделенных пользователей
                         </Typography>
                         <form onSubmit={handleSubmitRemoveGroup}>
@@ -790,7 +790,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" color='text.secondary' gutterBottom>
                             Фильтрация пользователей
                         </Typography>
                         <form onSubmit={handleApplyFilters}>
