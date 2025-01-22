@@ -63,6 +63,7 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                     </ListItemIcon>
                     <ListItemText>Мои расписания</ListItemText>
                 </MenuItem>
+                <Divider />
                 <MenuItem onClick={toggleTheme}>
                     <ListItemIcon>
                         {darkMode ? <WbSunny fontSize='small' /> : <NightsStay fontSize='small' />}
@@ -105,6 +106,13 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                     </ListItemIcon>
                     <ListItemText>Расписания</ListItemText>
                 </MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin/users' >
+                    <ListItemIcon>
+                        <Person fontsize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Пользователи</ListItemText>
+                </MenuItem>
+                <Divider />
                 <MenuItem onClick={toggleTheme}>
                     <ListItemIcon>
                         {darkMode ? <WbSunny fontSize='small' /> : <NightsStay fontSize='small' />}
@@ -112,12 +120,6 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                     <ListItemText>
                         {darkMode ? 'Светлая тема' : 'Темная тема'}
                     </ListItemText>
-                </MenuItem>
-                <MenuItem onClick={closeMenu} component={Link} to='/admin/users' >
-                    <ListItemIcon>
-                        <Person fontsize='small' />
-                    </ListItemIcon>
-                    <ListItemText>Пользователи</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={logout} sx={{color: 'red'}}>
