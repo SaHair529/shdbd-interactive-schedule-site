@@ -57,7 +57,7 @@ const AdminUserListPage = ({userSessionData}) => {
     const [openUpdateUserDrawer, setOpenUpdateUserDrawer] = useState(false)
 
     const [updateUserErrorMessage, setUpdateUserErrorMessage] = useState(null)
-    const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [] })
+    const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [], schedules: [] })
 
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
@@ -259,6 +259,27 @@ const AdminUserListPage = ({userSessionData}) => {
             return
         }
 
+        if (name === 'schedules') {
+            setSelectedUser((prevData) => {
+                const scheduleExists = prevData.schedules.some(schedule => schedule.id === +value)
+
+                if (scheduleExists) {
+                    const updatedSchedules = prevData.schedules.filter(schedule => schedule.id !== +value)
+                    return {
+                        ...prevData,
+                        schedules: updatedSchedules,
+                    }
+                } else {
+                    const newSchedule = { id: +value }
+                    return {
+                        ...prevData,
+                        schedules: [...prevData.schedules, newSchedule],
+                    }
+                }
+            })
+            return
+        }
+
         setSelectedUser((prevData) => ({
             ...prevData,
             [name]: value
@@ -296,7 +317,7 @@ const AdminUserListPage = ({userSessionData}) => {
     const handleCloseSelectedUserDrawer = () => {
         setOpenUpdateUserDrawer(false)
 
-        setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
+        setSelectedUser({ fullName: '', email: '', roles: [], groups: [], schedules: [] })
     }
 
     const handleUpdateUser = async (id) => {
@@ -316,7 +337,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         user.id === id ? { ...user, ...selectedUser } : user
                     )
                 )
-                setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
+                setSelectedUser({ fullName: '', email: '', roles: [], groups: [], schedules: [] })
                 setOpenUpdateUserDrawer(false)
             }
         }
@@ -1078,25 +1099,48 @@ const AdminUserListPage = ({userSessionData}) => {
                                 </FormGroup>
                             </FormControl>
                         </Box>
-                        <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
-                            <Typography variant="subtitle1">Группы</Typography>
-                            <FormGroup>
-                                {groups.map((group) => (
-                                    <FormControlLabel
-                                        key={role.value}
-                                        control={
-                                            <Checkbox
-                                                checked={selectedUser.groups.some(g => g.id === group.id)}
-                                                onChange={handleChangeSelectedUser}
-                                                name="groups"
-                                                value={group.id}
-                                            />
-                                        }
-                                        label={group.name}
-                                    />
-                                ))}
-                            </FormGroup>
-                        </FormControl>
+                        <Box>
+                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                                <Typography variant="subtitle1">Группы</Typography>
+                                <FormGroup>
+                                    {groups.map((group) => (
+                                        <FormControlLabel
+                                            key={role.value}
+                                            control={
+                                                <Checkbox
+                                                    checked={selectedUser.groups.some(g => g.id === group.id)}
+                                                    onChange={handleChangeSelectedUser}
+                                                    name="groups"
+                                                    value={group.id}
+                                                />
+                                            }
+                                            label={group.name}
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </FormControl>
+                        </Box>
+                        <Box>
+                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                                <Typography variant="subtitle1">Группы</Typography>
+                                <FormGroup>
+                                    {schedules.map((schedule) => (
+                                        <FormControlLabel
+                                            key={role.value}
+                                            control={
+                                                <Checkbox
+                                                    checked={selectedUser.schedules.some(s => s.id === schedule.id)}
+                                                    onChange={handleChangeSelectedUser}
+                                                    name="schedules"
+                                                    value={schedule.id}
+                                                />
+                                            }
+                                            label={schedule.title}
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </FormControl>
+                        </Box>
 
                         {updateUserErrorMessage && (
                             <Alert severity='error'>
