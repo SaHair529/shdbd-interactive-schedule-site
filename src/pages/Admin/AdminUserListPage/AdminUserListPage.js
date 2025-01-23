@@ -35,7 +35,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import FullscreenLoader from "../../../components/FullscreenLoader";
 import {
-    Close,
+    Close, DateRange,
     Delete,
     ErrorOutline,
     FilterAlt,
@@ -66,6 +66,11 @@ const AdminUserListPage = ({userSessionData}) => {
     const [openChangeGroupModal, setOpenChangeGroupModal] = useState(false)
     const [openRemoveGroupModal, setOpenRemoveGroupModal] = useState(false)
     const [selectedGroup, setSelectedGroup] = useState(null)
+
+    const [schedules, setSchedules] = useState([])
+    const [openAddScheduleModal, setOpenAddScheduleModal] = useState(false)
+    const [openRemoveScheduleModal, setOpenRemoveScheduleModal] = useState(false)
+    const [selectedSchedule, setSelectedSchedule] = useState(null)
 
     const [searchQuery, setSearchQuery] = useState("")
 
@@ -98,6 +103,7 @@ const AdminUserListPage = ({userSessionData}) => {
     useEffect(() => {
         loadUsers(page, rowsPerPage, searchQuery)
         loadGroups()
+        loadSchedules()
     }, [userSessionData, page, rowsPerPage, searchQuery, selectedFilterGroups])
 
     const loadUsers = async (currentPage, currentRowsPerPage, searchQuery) => {
@@ -139,6 +145,18 @@ const AdminUserListPage = ({userSessionData}) => {
                 },
             })
             setGroups(response.data)
+        }
+        catch (err) {}
+    }
+
+    const loadSchedules = async () => {
+        try {
+            const response = await api.get('/user_schedules', {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                },
+            })
+            setSchedules(response.data)
         }
         catch (err) {}
     }
@@ -265,6 +283,11 @@ const AdminUserListPage = ({userSessionData}) => {
         setSelectedGroup(null)
     }
 
+    const handleCloseAddScheduleModal = () => {
+        setOpenAddScheduleModal(false)
+        setSelectedSchedule(null)
+    }
+
     const handleCloseSelectedUserDrawer = () => {
         setOpenUpdateUserDrawer(false)
 
@@ -358,6 +381,32 @@ const AdminUserListPage = ({userSessionData}) => {
             console.log('response',response)
             if (response.status === 200) {
                 window.location.reload()
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+        }
+    }
+
+    const handleSubmitAddSchedule = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await api.post('/schedule/batch_link/'+selectedSchedule,
+                {
+                    usersIds: selectedUsersIds
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+
+            if (response.status === 200) {
+                setOpenAddScheduleModal(false)
             }
         }
         catch (err) {
@@ -557,7 +606,7 @@ const AdminUserListPage = ({userSessionData}) => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
                             color='primary'
-                            aria-label='add schedule'
+                            aria-label='add group'
                             disabled={selectedUsersIds.length === 0}
                             onClick={() => setOpenChangeGroupModal(true)}
                         >
@@ -566,13 +615,33 @@ const AdminUserListPage = ({userSessionData}) => {
 
                         <IconButton
                             color='secondary'
-                            aria-label='remove schedule'
+                            aria-label='remove group'
                             disabled={selectedUsersIds.length === 0}
                             sx={{position: 'relative'}}
                             onClick={() => setOpenRemoveGroupModal(true)}
                         >
                             <Group />
                             <Close fontSize="small" sx={{position: 'absolute', bottom: 5, right: -3}} /> {/* Иконка крестика */}
+                        </IconButton>
+
+                        <IconButton
+                            color='primary'
+                            aria-label='add schedule'
+                            disabled={selectedUsersIds.length === 0}
+                            onClick={() => setOpenAddScheduleModal(true)}
+                        >
+                            <DateRange />
+                        </IconButton>
+
+                        <IconButton
+                            color='secondary'
+                            aria-label='remove schedule'
+                            disabled={selectedUsersIds.length === 0}
+                            sx={{position: 'relative'}}
+                            onClick={() => setOpenRemoveScheduleModal(true)}
+                        >
+                            <DateRange />
+                            <Close fontSize="small" sx={{position: 'absolute', bottom: 5, right: 0}} /> {/* Иконка крестика */}
                         </IconButton>
 
                         <IconButton
@@ -708,7 +777,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         flexDirection: 'column',
                     }}>
                         <Typography variant="h6" gutterBottom color='text.secondary'>
-                            Сменить группу для выделенных пользователей
+                            Добавить группу для выделенных пользователей
                         </Typography>
                         <form onSubmit={handleSubmitChangeGroup}>
                             <FormControl fullWidth margin="normal">
@@ -826,6 +895,50 @@ const AdminUserListPage = ({userSessionData}) => {
                             <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                                 <Button type="submit" variant="contained" color="primary">
                                     Подтвердить
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+
+                <Modal open={openAddScheduleModal} onClose={handleCloseAddScheduleModal}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
+                            Добавить расписание выделенным пользователям
+                        </Typography>
+                        <form onSubmit={handleSubmitAddSchedule}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="group-select-label">Выберите расписание</InputLabel>
+                                <Select
+                                    labelId="group-select-label"
+                                    value={selectedSchedule}
+                                    onChange={(e) => setSelectedSchedule(e.target.value)}
+                                    required
+                                >
+                                    {schedules.map((schedule) => (
+                                        <MenuItem key={schedule.id} value={schedule.id}>
+                                            {schedule.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                <FormHelperText>Выберите группу для выделенных пользователей</FormHelperText>
+                            </FormControl>
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Добавить расписание
                                 </Button>
                             </Box>
                         </form>
