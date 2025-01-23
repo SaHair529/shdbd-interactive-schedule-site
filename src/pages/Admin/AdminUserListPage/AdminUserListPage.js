@@ -1122,7 +1122,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         </Box>
                         <Box>
                             <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
-                                <Typography variant="subtitle1">Группы</Typography>
+                                <Typography variant="subtitle1">Расписания</Typography>
                                 <FormGroup>
                                     {schedules.map((schedule) => (
                                         <FormControlLabel
