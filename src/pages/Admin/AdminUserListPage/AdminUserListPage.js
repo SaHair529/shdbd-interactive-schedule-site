@@ -28,7 +28,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    InputAdornment, Drawer, FormControlLabel, FormGroup
+    InputAdornment, Drawer, FormControlLabel, FormGroup, Alert
 } from "@mui/material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
@@ -55,10 +55,9 @@ const AdminUserListPage = ({userSessionData}) => {
     const [totalUsers, setTotalUsers] = useState(0)
 
     const [openUpdateUserDrawer, setOpenUpdateUserDrawer] = useState(false)
-    const [selectedUserFullName, setSelectedUserFullName] = useState("")
-    const [selectedUserEmail, setSelectedUserEmail] = useState("")
-    const [selectedUserRoles, setSelectedUserRoles] = useState([])
-    const [selectedUserGroups, setSelectedUserGroups] = useState([])
+
+    const [updateUserErrorMessage, setUpdateUserErrorMessage] = useState(null)
+    const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [] })
 
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
     const [selectedUsersIds, setSelectedUsersIds] = useState([])
@@ -193,10 +192,8 @@ const AdminUserListPage = ({userSessionData}) => {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 },
             })
-            setSelectedUserFullName(response.data['fullName'])
-            setSelectedUserEmail(response.data['email'])
-            setSelectedUserRoles(response.data['roles'])
-            setSelectedUserGroups(response.data['groups'])
+
+            setSelectedUser(response.data)
             setOpenUpdateUserDrawer(true)
         }
         catch (err) {
@@ -258,14 +255,42 @@ const AdminUserListPage = ({userSessionData}) => {
 
     const handleCloseSelectedUserDrawer = () => {
         setOpenUpdateUserDrawer(false)
-        setSelectedUserFullName('')
-        setSelectedUserEmail('')
-        setSelectedUserRoles([])
-        setSelectedUserGroups([])
+
+        setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
     }
 
-    const handleUpdateUser = () => {
-        // TODO
+    const handleUpdateUser = async (id) => {
+        try {
+            const response = await api.post('/user/'+id,
+                selectedUser,
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+
+            if (response.status === 200) {
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === id ? { ...user, ...selectedUser } : user
+                    )
+                )
+                setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
+                setOpenUpdateUserDrawer(false)
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+            else if (err.response.status === 400) {
+                if (err.response.data['error']) {
+                    setUpdateUserErrorMessage(err.response.data['error'])
+                }
+            }
+        }
     }
 
     const handleSubmitCreateUser = async (e) => {
@@ -395,7 +420,9 @@ const AdminUserListPage = ({userSessionData}) => {
             if (newSelected.includes(value)) {
                 newSelected.splice(newSelected.indexOf(value), 1)
                 setActiveFilters((prevActive) => {
-                    delete prevActive.groups
+                    if (!newSelected.length) {
+                        delete prevActive.groups
+                    }
                     return prevActive
                 })
             } else {
@@ -668,7 +695,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
                             Сменить группу для выделенных пользователей
                         </Typography>
                         <form onSubmit={handleSubmitChangeGroup}>
@@ -711,7 +738,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
                             Исключить из группы выделенных пользователей
                         </Typography>
                         <form onSubmit={handleSubmitRemoveGroup}>
@@ -754,7 +781,7 @@ const AdminUserListPage = ({userSessionData}) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" color='text.secondary' gutterBottom>
                             Фильтрация пользователей
                         </Typography>
                         <form onSubmit={handleApplyFilters}>
@@ -867,8 +894,14 @@ const AdminUserListPage = ({userSessionData}) => {
                             </FormGroup>
                         </FormControl>
 
+                        {updateUserErrorMessage && (
+                            <Alert severity='error'>
+                                {updateUserErrorMessage}
+                            </Alert>
+                        )}
+
                         <Box sx={{ marginTop: 'auto' }} >
-                            <Button fullWidth variant="contained" color="primary" onClick={handleUpdateUser}>
+                            <Button fullWidth variant="contained" color="primary" onClick={() => handleUpdateUser(selectedUser.id)}>
                                 Сохранить изменения
                             </Button>
                         </Box>

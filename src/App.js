@@ -10,6 +10,7 @@ import AdminProtectedRoute from "./pages/AdminProtectedRoute";
 import AdminScheduleListPage from "./pages/Admin/AdminScheduleListPage/AdminScheduleListPage";
 import AdminSchedulePage from "./pages/Admin/AdminSchedulePage/AdminSchedulePage";
 import AdminUserListPage from "./pages/Admin/AdminUserListPage/AdminUserListPage";
+import AdminSubjectListPage from "./pages/Admin/AdminSubjectListPage/AdminSubjectListPage";
 
 
 function App({darkMode, setDarkMode}) {
@@ -30,6 +31,7 @@ function App({darkMode, setDarkMode}) {
                     <Route path="/admin" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminScheduleListPage userSessionData={userSessionData} />} />}/>
                     <Route path="/admin/schedule/:id" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminSchedulePage userSessionData={userSessionData} />} />}/>
                     <Route path="/admin/users" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminUserListPage userSessionData={userSessionData} />} />}/>
+                    <Route path="/admin/subjects" element={<AdminProtectedRoute userSessionData={userSessionData} element={<AdminSubjectListPage userSessionData={userSessionData} />} />}/>
                 </Routes>
             </Router>
         </div>
