@@ -407,6 +407,8 @@ const AdminUserListPage = ({userSessionData}) => {
 
             if (response.status === 200) {
                 setOpenAddScheduleModal(false)
+                setSelectedUsersIds([])
+                setSelectedSchedule(null)
             }
         }
         catch (err) {
