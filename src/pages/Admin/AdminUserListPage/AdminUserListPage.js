@@ -211,28 +211,40 @@ const AdminUserListPage = ({userSessionData}) => {
         const { name, value } = e.target
 
         if (name === 'roles') {
-            setSelectedUserRoles((prevData) => {
-                const roles = prevData.includes(value)
-                    ? prevData.filter(role => role !== value)
-                    : [...prevData, value]
-                return roles
+            setSelectedUser((prevData) => {
+                const roles = prevData.roles.includes(value)
+                    ? prevData.roles.filter(role => role !== value)
+                    : [...prevData.roles, value]
+                return { ...prevData, roles }
             })
             return
         }
 
         if (name === 'groups') {
-            setSelectedUserGroups((prevData) => {
-                const groupExists = prevData.some(group => group.id === +value)
+            setSelectedUser((prevData) => {
+                const groupExists = prevData.groups.some(group => group.id === +value)
 
                 if (groupExists) {
-                    const updatedGroups = prevData.filter(group => group.id !== +value)
-                    return updatedGroups
+                    const updatedGroups = prevData.groups.filter(group => group.id !== +value)
+                    return {
+                        ...prevData,
+                        groups: updatedGroups,
+                    }
                 } else {
                     const newGroup = { id: +value }
-                    return [...prevData, newGroup]
+                    return {
+                        ...prevData,
+                        groups: [...prevData.groups, newGroup],
+                    }
                 }
             })
+            return
         }
+
+        setSelectedUser((prevData) => ({
+            ...prevData,
+            [name]: value
+        }))
     }
 
     const handleCloseCreateUserModal = () => {
@@ -840,8 +852,8 @@ const AdminUserListPage = ({userSessionData}) => {
                             variant="outlined"
                             fullWidth
                             name="fullName"
-                            value={selectedUserFullName}
-                            onChange={(e) => setSelectedUserFullName(e.target.value) }
+                            value={selectedUser.fullName}
+                            onChange={handleChangeSelectedUser}
                             sx={{ marginBottom: 2 }}
                         />
                         <TextField
@@ -849,8 +861,8 @@ const AdminUserListPage = ({userSessionData}) => {
                             variant="outlined"
                             fullWidth
                             name="email"
-                            value={selectedUserEmail}
-                            onChange={(e) => setSelectedUserEmail(e.target.value)}
+                            value={selectedUser.email}
+                            onChange={handleChangeSelectedUser}
                             sx={{ marginBottom: 2 }}
                         />
                         <Box>
@@ -862,7 +874,7 @@ const AdminUserListPage = ({userSessionData}) => {
                                             key={role.value}
                                             control={
                                                 <Checkbox
-                                                    checked={selectedUserRoles.includes(role.value)}
+                                                    checked={selectedUser.roles.includes(role.value)}
                                                     onChange={handleChangeSelectedUser}
                                                     name="roles"
                                                     value={role.value}
@@ -882,7 +894,7 @@ const AdminUserListPage = ({userSessionData}) => {
                                         key={role.value}
                                         control={
                                             <Checkbox
-                                                checked={selectedUserGroups.some(g => g.id === group.id)}
+                                                checked={selectedUser.groups.some(g => g.id === group.id)}
                                                 onChange={handleChangeSelectedUser}
                                                 name="groups"
                                                 value={group.id}
