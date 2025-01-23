@@ -1,16 +1,16 @@
 import {
     Box, Button, Checkbox,
-    Container, Dialog, DialogActions, DialogContent, DialogTitle,
-    IconButton,
-    Paper,
+    Container, Dialog, DialogActions, DialogContent, DialogTitle, Fab, FormControl, FormHelperText,
+    IconButton, InputLabel, ListItemIcon, ListItemText, Menu, MenuItem, Modal,
+    Paper, Select,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, Typography,
+    TableRow, TextField, Typography,
 } from "@mui/material";
-import {Delete} from "@mui/icons-material";
+import {BookmarkAdd, Delete, MoreVert, PersonAdd} from "@mui/icons-material";
 import api from "../../../api";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -21,6 +21,10 @@ const AdminSubjectListPage = ({userSessionData}) => {
     const [subjects, setSubjects] = useState([])
     const [selectedSubjectsIds, setSelectedSubjectsIds] = useState([])
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
+
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [openCreateSubjectModal, setOpenCreateSubjectModal] = useState(false)
+    const [subjectName, setSubjectName] = useState('')
 
     useEffect(() => {
         loadSubjects()
@@ -76,6 +80,52 @@ const AdminSubjectListPage = ({userSessionData}) => {
             if (err.response.status === 401) {
                 localStorage.removeItem('userSessionData')
                 navigate('/login')
+            }
+        }
+    }
+
+    const openSubjectsMenu = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const closeSubjectsMenu = () => {
+        setAnchorEl(null)
+    }
+
+    const handleClickCreateSubjectButton = () => {
+        closeSubjectsMenu()
+        setOpenCreateSubjectModal(true)
+    }
+
+    const handleCloseCreateSubjectModal = () => {
+        setOpenCreateSubjectModal(false)
+    }
+
+    const handleSubmitCreateSubject = async (e) => {
+        e.preventDefault()
+
+        try {
+            const response = await api.post('/subject',
+                {
+                    name: subjectName,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+            if (response.status === 201) {
+                loadSubjects()
+                setOpenCreateSubjectModal(false)
+                setSubjectName('')
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+                return
             }
         }
     }
@@ -137,6 +187,65 @@ const AdminSubjectListPage = ({userSessionData}) => {
                     <Button onClick={handleConfirmDeleteSubjects} color='secondary'>Удалить</Button>
                 </DialogActions>
             </Dialog>
+            <Fab
+                aria-label="add"
+                size="small"
+                color='primary'
+                onClick={openSubjectsMenu}
+                sx={{ position: 'fixed', bottom: 16, right: 50, zIndex: 1000 }}
+            >
+                <MoreVert />
+            </Fab>
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={closeSubjectsMenu}
+                sx={{ transform: 'translateY(-50px)' }}
+            >
+                <MenuItem
+                    onClick={handleClickCreateSubjectButton} >
+                    <ListItemIcon>
+                        <BookmarkAdd/>
+                    </ListItemIcon>
+                    <ListItemText>Создать новый предмет</ListItemText>
+                </MenuItem>
+            </Menu>
+            <Modal open={openCreateSubjectModal} onClose={handleCloseCreateSubjectModal}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '90%',
+                    width: 500,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}>
+                    <Typography variant="h6" gutterBottom color='text.secondary'>
+                        Создать новый предмет
+                    </Typography>
+                    <form onSubmit={handleSubmitCreateSubject}>
+                        <TextField
+                            label="Название предмета"
+                            type="text"
+                            value={subjectName}
+                            onChange={(e) => setSubjectName(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            required
+                        />
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <Button type="submit" variant="contained" color="primary">
+                                Создать
+                            </Button>
+                        </Box>
+                    </form>
+                </Box>
+            </Modal>
         </Box>
     )
 }
