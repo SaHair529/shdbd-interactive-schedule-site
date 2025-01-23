@@ -288,6 +288,11 @@ const AdminUserListPage = ({userSessionData}) => {
         setSelectedSchedule(null)
     }
 
+    const handleCloseRemoveScheduleModal = () => {
+        setOpenRemoveScheduleModal(false)
+        setSelectedSchedule(null)
+    }
+
     const handleCloseSelectedUserDrawer = () => {
         setOpenUpdateUserDrawer(false)
 
@@ -407,6 +412,34 @@ const AdminUserListPage = ({userSessionData}) => {
 
             if (response.status === 200) {
                 setOpenAddScheduleModal(false)
+                setSelectedUsersIds([])
+                setSelectedSchedule(null)
+            }
+        }
+        catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('userSessionData')
+                navigate('/login')
+            }
+        }
+    }
+
+    const handleSubmitRemoveSchedule = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await api.post('/schedule/batch_unlink/'+selectedSchedule,
+                {
+                    usersIds: selectedUsersIds
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                }
+            )
+
+            if (response.status === 200) {
+                setOpenRemoveScheduleModal(false)
                 setSelectedUsersIds([])
                 setSelectedSchedule(null)
             }
@@ -941,6 +974,50 @@ const AdminUserListPage = ({userSessionData}) => {
                             <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                                 <Button type="submit" variant="contained" color="primary">
                                     Добавить расписание
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Modal>
+
+                <Modal open={openRemoveScheduleModal} onClose={handleCloseRemoveScheduleModal}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90%',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <Typography variant="h6" gutterBottom color='text.secondary'>
+                            Удалить расписание у выделенных пользователей
+                        </Typography>
+                        <form onSubmit={handleSubmitRemoveSchedule}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="group-select-label">Выберите расписание</InputLabel>
+                                <Select
+                                    labelId="group-select-label"
+                                    value={selectedSchedule}
+                                    onChange={(e) => setSelectedSchedule(e.target.value)}
+                                    required
+                                >
+                                    {schedules.map((schedule) => (
+                                        <MenuItem key={schedule.id} value={schedule.id}>
+                                            {schedule.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                <FormHelperText>Выберите группу для выделенных пользователей</FormHelperText>
+                            </FormControl>
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                                <Button type="submit" variant="contained" color="secondary">
+                                    Удалить расписание
                                 </Button>
                             </Box>
                         </form>
