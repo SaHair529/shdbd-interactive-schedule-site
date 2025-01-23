@@ -1059,7 +1059,7 @@ const AdminUserListPage = ({userSessionData}) => {
             </Container>
 
                 <Drawer anchor='right' open={openUpdateUserDrawer} onClose={handleCloseSelectedUserDrawer}>
-                    <Box sx={{width: 300, padding: 2,height: '100%', display: 'flex', flexDirection: 'column'}}>
+                    <Box sx={{width: 300, padding: 2,height: '96%', display: 'flex', flexDirection: 'column'}}>
                         <TextField
                             label="ФИО"
                             variant="outlined"
@@ -1078,68 +1078,70 @@ const AdminUserListPage = ({userSessionData}) => {
                             onChange={handleChangeSelectedUser}
                             sx={{ marginBottom: 2 }}
                         />
-                        <Box>
-                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
-                                <Typography variant="subtitle1">Роли</Typography>
-                                <FormGroup>
-                                    {ROLES.map((role) => (
-                                        <FormControlLabel
-                                            key={role.value}
-                                            control={
-                                                <Checkbox
-                                                    checked={selectedUser.roles.includes(role.value)}
-                                                    onChange={handleChangeSelectedUser}
-                                                    name="roles"
-                                                    value={role.value}
-                                                />
-                                            }
-                                            label={role.label}
-                                        />
-                                    ))}
-                                </FormGroup>
-                            </FormControl>
-                        </Box>
-                        <Box>
-                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
-                                <Typography variant="subtitle1">Группы</Typography>
-                                <FormGroup>
-                                    {groups.map((group) => (
-                                        <FormControlLabel
-                                            key={role.value}
-                                            control={
-                                                <Checkbox
-                                                    checked={selectedUser.groups.some(g => g.id === group.id)}
-                                                    onChange={handleChangeSelectedUser}
-                                                    name="groups"
-                                                    value={group.id}
-                                                />
-                                            }
-                                            label={group.name}
-                                        />
-                                    ))}
-                                </FormGroup>
-                            </FormControl>
-                        </Box>
-                        <Box>
-                            <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
-                                <Typography variant="subtitle1">Расписания</Typography>
-                                <FormGroup>
-                                    {schedules.map((schedule) => (
-                                        <FormControlLabel
-                                            key={role.value}
-                                            control={
-                                                <Checkbox
-                                                    checked={selectedUser.schedules.some(s => s.id === schedule.id)}
-                                                    onChange={handleChangeSelectedUser}
-                                                    name="schedules"
-                                                    value={schedule.id}
-                                                />
-                                            }
-                                            label={schedule.title}
-                                        />
-                                    ))}
-                                </FormGroup>
-                            </FormControl>
+                        <Box sx={{overflowY: 'auto', maxHeight: '75%'}}>
+                            <Box>
+                                <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                                    <Typography variant="subtitle1">Роли</Typography>
+                                    <FormGroup>
+                                        {ROLES.map((role) => (
+                                            <FormControlLabel
+                                                key={role.value}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedUser.roles.includes(role.value)}
+                                                        onChange={handleChangeSelectedUser}
+                                                        name="roles"
+                                                        value={role.value}
+                                                    />
+                                                }
+                                                label={role.label}
+                                            />
+                                        ))}
+                                    </FormGroup>
+                                </FormControl>
+                            </Box>
+                            <Box>
+                                <FormControl component="fieldset" sx={{ marginBottom: 2 }}>
+                                    <Typography variant="subtitle1">Группы</Typography>
+                                    <FormGroup>
+                                        {groups.map((group) => (
+                                            <FormControlLabel
+                                                key={role.value}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedUser.groups.some(g => g.id === group.id)}
+                                                        onChange={handleChangeSelectedUser}
+                                                        name="groups"
+                                                        value={group.id}
+                                                    />
+                                                }
+                                                label={group.name}
+                                            />
+                                        ))}
+                                    </FormGroup>
+                                </FormControl>
+                            </Box>
+                            <Box>
+                                <FormControl component="fieldset" >
+                                    <Typography variant="subtitle1">Расписания</Typography>
+                                    <FormGroup>
+                                        {schedules.map((schedule) => (
+                                            <FormControlLabel
+                                                key={role.value}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedUser.schedules.some(s => s.id === schedule.id)}
+                                                        onChange={handleChangeSelectedUser}
+                                                        name="schedules"
+                                                        value={schedule.id}
+                                                    />
+                                                }
+                                                label={schedule.title}
+                                            />
+                                        ))}
+                                    </FormGroup>
+                                </FormControl>
+                            </Box>
                         </Box>
 
                         {updateUserErrorMessage && (
