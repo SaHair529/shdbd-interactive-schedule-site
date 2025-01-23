@@ -55,6 +55,7 @@ const AdminUserListPage = ({userSessionData}) => {
     const [totalUsers, setTotalUsers] = useState(0)
 
     const [openUpdateUserDrawer, setOpenUpdateUserDrawer] = useState(false)
+
     const [updateUserErrorMessage, setUpdateUserErrorMessage] = useState(null)
     const [selectedUser, setSelectedUser] = useState({ fullName: '', email: '', roles: [], groups: [] })
 
@@ -191,6 +192,7 @@ const AdminUserListPage = ({userSessionData}) => {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 },
             })
+
             setSelectedUser(response.data)
             setOpenUpdateUserDrawer(true)
         }
@@ -209,40 +211,28 @@ const AdminUserListPage = ({userSessionData}) => {
         const { name, value } = e.target
 
         if (name === 'roles') {
-            setSelectedUser((prevData) => {
-                const roles = prevData.roles.includes(value)
-                    ? prevData.roles.filter(role => role !== value)
-                    : [...prevData.roles, value]
-                return { ...prevData, roles }
+            setSelectedUserRoles((prevData) => {
+                const roles = prevData.includes(value)
+                    ? prevData.filter(role => role !== value)
+                    : [...prevData, value]
+                return roles
             })
             return
         }
 
         if (name === 'groups') {
-            setSelectedUser((prevData) => {
-                const groupExists = prevData.groups.some(group => group.id === +value)
+            setSelectedUserGroups((prevData) => {
+                const groupExists = prevData.some(group => group.id === +value)
 
                 if (groupExists) {
-                    const updatedGroups = prevData.groups.filter(group => group.id !== +value)
-                    return {
-                        ...prevData,
-                        groups: updatedGroups,
-                    }
+                    const updatedGroups = prevData.filter(group => group.id !== +value)
+                    return updatedGroups
                 } else {
                     const newGroup = { id: +value }
-                    return {
-                        ...prevData,
-                        groups: [...prevData.groups, newGroup],
-                    }
+                    return [...prevData, newGroup]
                 }
             })
-            return
         }
-
-        setSelectedUser((prevData) => ({
-            ...prevData,
-            [name]: value
-        }))
     }
 
     const handleCloseCreateUserModal = () => {
@@ -265,6 +255,7 @@ const AdminUserListPage = ({userSessionData}) => {
 
     const handleCloseSelectedUserDrawer = () => {
         setOpenUpdateUserDrawer(false)
+
         setSelectedUser({ fullName: '', email: '', roles: [], groups: [] })
     }
 
@@ -849,8 +840,8 @@ const AdminUserListPage = ({userSessionData}) => {
                             variant="outlined"
                             fullWidth
                             name="fullName"
-                            value={selectedUser.fullName}
-                            onChange={handleChangeSelectedUser}
+                            value={selectedUserFullName}
+                            onChange={(e) => setSelectedUserFullName(e.target.value) }
                             sx={{ marginBottom: 2 }}
                         />
                         <TextField
@@ -858,8 +849,8 @@ const AdminUserListPage = ({userSessionData}) => {
                             variant="outlined"
                             fullWidth
                             name="email"
-                            value={selectedUser.email}
-                            onChange={handleChangeSelectedUser}
+                            value={selectedUserEmail}
+                            onChange={(e) => setSelectedUserEmail(e.target.value)}
                             sx={{ marginBottom: 2 }}
                         />
                         <Box>
@@ -871,7 +862,7 @@ const AdminUserListPage = ({userSessionData}) => {
                                             key={role.value}
                                             control={
                                                 <Checkbox
-                                                    checked={selectedUser.roles.includes(role.value)}
+                                                    checked={selectedUserRoles.includes(role.value)}
                                                     onChange={handleChangeSelectedUser}
                                                     name="roles"
                                                     value={role.value}
@@ -891,7 +882,7 @@ const AdminUserListPage = ({userSessionData}) => {
                                         key={role.value}
                                         control={
                                             <Checkbox
-                                                checked={selectedUser.groups.some(g => g.id === group.id)}
+                                                checked={selectedUserGroups.some(g => g.id === group.id)}
                                                 onChange={handleChangeSelectedUser}
                                                 name="groups"
                                                 value={group.id}
