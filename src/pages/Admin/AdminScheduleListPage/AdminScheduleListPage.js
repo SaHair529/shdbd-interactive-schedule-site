@@ -69,6 +69,25 @@ const AdminSchedulesListPage = ({userSessionData}) => {
         }
     }
 
+    const handleDeleteSchedule = async (scheduleId) => {
+        const confirmResult = window.confirm('Вы уверены, что хотите удалить расписание?')
+        if (confirmResult) {
+            try {
+                const response = await api.delete(`/schedule/${scheduleId}`, {
+                    headers: {
+                        Authorization: `Bearer ${userSessionData['accessToken']}`
+                    }
+                })
+                if (response.status === 204) {
+                    fetchSchedules()
+                }
+            }
+            catch (error) {
+
+            }
+        }
+    }
+
     useEffect(() => {
         fetchSchedules()
     }, [userSessionData])
@@ -96,8 +115,9 @@ const AdminSchedulesListPage = ({userSessionData}) => {
                                     <Typography color="textSecondary">ID: {schedule.id}</Typography>
                                     <Divider sx={{ my: 2 }} />
                                     <Link to={`/admin/schedule/${schedule.id}`}>
-                                        <Button variant="contained" color="primary" size="small">Редактировать</Button>
+                                        <Button variant="contained" color="primary" size="small" sx={{marginRight: 1}}>Редактировать</Button>
                                     </Link>
+                                    <Button variant="contained" color="secondary" size="small" onClick={() => {handleDeleteSchedule(schedule.id)}}>Удалить</Button>
                                 </CardContent>
                             </Card>
                         </Grid2>
