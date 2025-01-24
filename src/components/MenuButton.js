@@ -6,7 +6,7 @@ import {
     GridView,
     NightsStay,
     WbSunny,
-    Person, Book
+    Person, Book, Groups
 } from "@mui/icons-material";
 import {useState} from "react";
 
@@ -117,6 +117,12 @@ const MenuButton = ({darkMode, setDarkMode, userSessionData}) => {
                         <Book fontsize='small' />
                     </ListItemIcon>
                     <ListItemText>Предметы</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={closeMenu} component={Link} to='/admin/groups' >
+                    <ListItemIcon>
+                        <Groups fontsize='small' />
+                    </ListItemIcon>
+                    <ListItemText>Группы</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={toggleTheme}>
