@@ -196,7 +196,7 @@ const AdminSchedulePage = ({userSessionData}) => {
 
     const handleDeleteScheduleItem = async () => {
         try {
-            const response = await api.delete(`/schedule/${selectedScheduleItemId}`, {
+            const response = await api.delete(`/schedule_item/${selectedScheduleItemId}`, {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
