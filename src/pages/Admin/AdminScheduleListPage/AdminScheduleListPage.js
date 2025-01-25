@@ -65,6 +65,8 @@ const AdminSchedulesListPage = ({userSessionData}) => {
             )
             if (response.status === 201) {
                 setLoading(false)
+                fetchSchedules()
+                setOpenCreateScheduleModal(false)
             }
         }
         catch (error) {
