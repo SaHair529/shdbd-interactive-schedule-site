@@ -14,10 +14,12 @@ import {
 } from "@mui/material";
 import {BookmarkAdd, Delete, GroupAdd, MoreVert} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
+import FullscreenLoader from "../../../components/FullscreenLoader";
 
 
 const AdminGroupListPage = ({userSessionData}) => {
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(false)
 
     const [groups, setGroups] = useState([])
     const [selectedGroupsIds, setSelectedGroupsIds] = useState([])
@@ -28,12 +30,14 @@ const AdminGroupListPage = ({userSessionData}) => {
 
     const loadGroups = async () => {
         try {
+            setLoading(true)
             const response = await api.get('/group', {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 },
             })
             setGroups(response.data)
+            setLoading(false)
         }
         catch (err) {}
     }
@@ -59,6 +63,7 @@ const AdminGroupListPage = ({userSessionData}) => {
         const confirmResult = window.confirm("Вы уверены, что хотите удалить выделенные группы?")
         if (confirmResult) {
             try {
+                setLoading(true)
                 await api.delete('/group/', {
                     data: {
                         ids: selectedGroupsIds,
@@ -69,6 +74,7 @@ const AdminGroupListPage = ({userSessionData}) => {
                 })
                 loadGroups()
                 setSelectedGroupsIds([])
+                setLoading(false)
             }
             catch (err) {
                 if (err.response.status === 401) {
@@ -100,6 +106,7 @@ const AdminGroupListPage = ({userSessionData}) => {
         e.preventDefault()
 
         try {
+            setLoading(true)
             const response = await api.post('/group/',
                 {
                     name: groupName,
@@ -115,6 +122,7 @@ const AdminGroupListPage = ({userSessionData}) => {
                 setOpenCreateGroupModal(false)
                 setGroupName('')
             }
+            setLoading(false)
         }
         catch (err) {
             if (err.response.status === 401) {
@@ -129,6 +137,10 @@ const AdminGroupListPage = ({userSessionData}) => {
     useEffect(() => {
         loadGroups()
     }, userSessionData)
+
+    if (loading) {
+        return (<FullscreenLoader loading={loading} />)
+    }
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh'}}>

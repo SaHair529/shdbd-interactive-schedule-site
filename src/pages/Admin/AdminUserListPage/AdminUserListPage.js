@@ -108,6 +108,7 @@ const AdminUserListPage = ({userSessionData}) => {
 
     const loadUsers = async (currentPage, currentRowsPerPage, searchQuery) => {
         try {
+            setLoading(true)
             const filterObj = {
                 groups: selectedFilterGroups,
             }
@@ -133,6 +134,7 @@ const AdminUserListPage = ({userSessionData}) => {
                 return
             }
 
+            setLoading(false)
             setError(err)
         }
     }

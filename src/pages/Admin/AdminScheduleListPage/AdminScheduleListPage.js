@@ -21,12 +21,13 @@ const AdminSchedulesListPage = ({userSessionData}) => {
     const [schedules, setSchedules] = useState([])
     const [openCreateScheduleModal, setOpenCreateScheduleModal] = useState(false)
     const [newScheduleTitle, setNewScheduleTitle] = useState('')
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
 
     const fetchSchedules = async () => {
         try {
+            setLoading(true)
             const response = await api.get('/user_schedules', {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
@@ -51,6 +52,7 @@ const AdminSchedulesListPage = ({userSessionData}) => {
 
     const handleSubmitCreateSubject = async () => {
         try {
+            setLoading(true)
             const response = await api.post('/schedule/create',
                 {
                     title: newScheduleTitle,
@@ -62,6 +64,7 @@ const AdminSchedulesListPage = ({userSessionData}) => {
                 }
             )
             if (response.status === 201) {
+                setLoading(false)
             }
         }
         catch (error) {
@@ -72,6 +75,7 @@ const AdminSchedulesListPage = ({userSessionData}) => {
     const handleDeleteSchedule = async (scheduleId) => {
         const confirmResult = window.confirm('Вы уверены, что хотите удалить расписание?')
         if (confirmResult) {
+            setLoading(true)
             try {
                 const response = await api.delete(`/schedule/${scheduleId}`, {
                     headers: {
@@ -81,6 +85,7 @@ const AdminSchedulesListPage = ({userSessionData}) => {
                 if (response.status === 204) {
                     fetchSchedules()
                 }
+                setLoading(false)
             }
             catch (error) {
 

@@ -43,11 +43,13 @@ const AdminSchedulePage = ({userSessionData}) => {
 
     const fetchSchedule = async () => {
         try {
+            setLoading(true)
             const response = await api.get(`/schedule/${id}`, {
                 headers: {
                     Authorization: `Bearer ${userSessionData['accessToken']}`
                 }
             })
+            setLoading(false)
             return response.data
         } catch (err) {
             if (err.response.status === 401) {
@@ -57,9 +59,11 @@ const AdminSchedulePage = ({userSessionData}) => {
             }
             else if (err.response.status === 404) {
                 setError('Расписание не найдено')
+                setLoading(false)
                 return err.response
             }
 
+            setLoading(false)
             setError(err)
             console.error(err)
             return null
