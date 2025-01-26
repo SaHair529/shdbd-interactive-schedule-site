@@ -319,7 +319,7 @@ const SchedulePage = ({userSessionData}) => {
                                 >
                                     <Typography
                                         component="span"
-                                        sx={{ fontWeight: 'bold', display: 'block', marginBottom: '3px' }}
+                                        sx={{ fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#c862b8' }}
                                     >
                                         {message.student.fullName}
                                     </Typography>
