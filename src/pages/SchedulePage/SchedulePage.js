@@ -305,8 +305,27 @@ const SchedulePage = ({userSessionData}) => {
                                     Студент {message.student.id} будет отсутствовать
                                 </Typography>
                             ) : (
-                                <Typography key={message.id} sx={{ backgroundColor: "#e0f7fa", marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0', width: 'fit-content', maxWidth: '80%', borderRadius: "8px", padding: "5px", marginBottom: "5px" }}>
-                                    {message.reason}
+                                <Typography
+                                    key={message.id}
+                                    sx={{
+                                        backgroundColor: "#e0f7fa",
+                                        marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0',
+                                        width: 'fit-content',
+                                        maxWidth: '80%',
+                                        borderRadius: "8px",
+                                        padding: "5px",
+                                        marginBottom: "5px"
+                                    }}
+                                >
+                                    <Typography
+                                        component="span"
+                                        sx={{ fontWeight: 'bold', display: 'block', marginBottom: '3px' }}
+                                    >
+                                        {message.student.fullName}
+                                    </Typography>
+                                    <Typography component="span">
+                                        {message.reason}
+                                    </Typography>
                                 </Typography>
                             )
                         ))}
