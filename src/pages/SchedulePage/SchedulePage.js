@@ -302,13 +302,13 @@ const SchedulePage = ({userSessionData}) => {
                         {messages.map(message => (
                             message.type === 1 ? (
                                 <Typography key={message.id} sx={{ marginBottom: "5px", fontStyle: "italic", color: "#616161", textAlign: 'center' }}>
-                                    Студент {message.student.id} будет отсутствовать
+                                    {message.student.fullName} будет отсутствовать
                                 </Typography>
                             ) : (
                                 <Typography
                                     key={message.id}
                                     sx={{
-                                        backgroundColor: "#e0f7fa",
+                                        backgroundColor: "#e8fcff",
                                         marginLeft: +message['student']['id'] === +userSessionData['userId'] ? 'auto' : '0',
                                         width: 'fit-content',
                                         maxWidth: '80%',
@@ -319,7 +319,7 @@ const SchedulePage = ({userSessionData}) => {
                                 >
                                     <Typography
                                         component="span"
-                                        sx={{ fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#c862b8' }}
+                                        sx={{ fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#5c8cbd' }}
                                     >
                                         {message.student.fullName}
                                     </Typography>
