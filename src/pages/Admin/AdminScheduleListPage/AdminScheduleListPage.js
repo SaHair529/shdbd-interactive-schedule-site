@@ -19,6 +19,8 @@ import FullscreenLoader from "../../../components/FullscreenLoader";
 
 const AdminSchedulesListPage = ({userSessionData}) => {
     const [schedules, setSchedules] = useState([])
+    const [teachers, setTeachers] = useState([])
+    const [teacherId, setTeacherId] = useState('')
     const [openCreateScheduleModal, setOpenCreateScheduleModal] = useState(false)
     const [newScheduleTitle, setNewScheduleTitle] = useState('')
     const [loading, setLoading] = useState(false)
@@ -44,6 +46,26 @@ const AdminSchedulesListPage = ({userSessionData}) => {
             setError(err)
             setLoading(false)
         }
+    }
+
+    const fetchTeachers = async () => {
+        try {
+            setLoading(true)
+            const response = await api.get('/teacher/', {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                }
+            })
+            setTeachers(response.data)
+        } catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
+                navigate('/login')
+                return
+            }
+            setError(err)
+        }
+        setLoading(false)
     }
 
     const handleCloseCreateScheduleModal = () => {
@@ -97,6 +119,7 @@ const AdminSchedulesListPage = ({userSessionData}) => {
 
     useEffect(() => {
         fetchSchedules()
+        fetchTeachers()
     }, [userSessionData])
 
     if (loading) return <FullscreenLoader loading={loading} />
@@ -173,7 +196,24 @@ const AdminSchedulesListPage = ({userSessionData}) => {
                             onChange={(e) => setNewScheduleTitle(e.target.value)}
                             fullWidth
                             margin="normal"
+                            required
                         />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel id="teacher-select-label">Учитель</InputLabel>
+                            <Select
+                                labelId="teacher-select-label"
+                                value={teacherId}
+                                onChange={(e) => setTeacherId(e.target.value)}
+                                label="Учитель"
+                                required
+                            >
+                                {teachers.map((teacher) => (
+                                    <MenuItem key={teacher.id} value={teacher.id}>
+                                        {teacher.fullName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                             <Button type="submit" variant="contained" color="primary">
                                 Создать
