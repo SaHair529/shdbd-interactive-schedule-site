@@ -98,6 +98,7 @@ const AdminUserListPage = ({userSessionData}) => {
     const ROLES = [
         {id: 0, label: 'Ученик', value: 'ROLE_USER'},
         {id: 1, label: 'Админ', value: 'ROLE_ADMIN'},
+        {id: 2, label: 'Учитель', value: 'ROLE_TEACHER'}
     ]
 
     useEffect(() => {
