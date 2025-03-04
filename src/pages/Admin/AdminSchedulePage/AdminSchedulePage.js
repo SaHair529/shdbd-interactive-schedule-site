@@ -19,6 +19,8 @@ const AdminSchedulePage = ({userSessionData}) => {
     const {id} = useParams()
     const [schedule, setSchedule] = useState({})
     const [subjects, setSubjects] = useState([])
+    const [teachers, setTeachers] = useState([])
+    const [teacherId, setTeacherId] = useState('')
     const [selectedScheduleItemId, setSelectedScheduleItemId] = useState(null)
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
@@ -68,6 +70,26 @@ const AdminSchedulePage = ({userSessionData}) => {
             console.error(err)
             return null
         }
+    }
+
+    const loadTeachers = async () => {
+        try {
+            setLoading(true)
+            const response = await api.get('/teacher/', {
+                headers: {
+                    Authorization: `Bearer ${userSessionData['accessToken']}`
+                }
+            })
+            setTeachers(response.data)
+        } catch (err) {
+            if (err.response.status === 401) {
+                localStorage.removeItem('accessToken')
+                navigate('/login')
+                return
+            }
+            setError(err)
+        }
+        setLoading(false)
     }
 
     const loadSubjects = async () => {
@@ -135,7 +157,8 @@ const AdminSchedulePage = ({userSessionData}) => {
                     endTime: endTime+':00',
                     dayOfWeek: +dayOfWeek,
                     subjectId: +subjectId,
-                    scheduleId: id
+                    scheduleId: id,
+                    teacherId: +teacherId,
                 },
                 {
                     headers: {
@@ -217,6 +240,7 @@ const AdminSchedulePage = ({userSessionData}) => {
     useEffect(() => {
         loadSchedule()
         loadSubjects()
+        loadTeachers()
     }, [id, userSessionData])
 
     if (loading) {
@@ -325,6 +349,22 @@ const AdminSchedulePage = ({userSessionData}) => {
                                 {subjects.map((subj) => (
                                     <MenuItem key={subj.id} value={subj.id}>
                                         {subj.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel id="teacher-select-label">Учитель</InputLabel>
+                            <Select
+                                labelId="teacher-select-label"
+                                value={teacherId}
+                                onChange={(e) => setTeacherId(e.target.value)}
+                                label="Учитель"
+                                required
+                            >
+                                {teachers.map((teacher) => (
+                                    <MenuItem key={teacher.id} value={teacher.id}>
+                                        {teacher.fullName}
                                     </MenuItem>
                                 ))}
                             </Select>
