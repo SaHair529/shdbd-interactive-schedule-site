@@ -273,7 +273,7 @@ const AdminSchedulePage = ({userSessionData}) => {
         <Container maxWidth='xxl' sx={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default'}} >
             <Grid2 container spacing={1} sx={{width: '60%'}}>
                 {/* Заголовки дней */}
-                {Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
+                {schedule.sortedScheduleItems && Object.keys(schedule.sortedScheduleItems).map((dayNumber) => (
                     <Grid2 item xs={12} size={4} className='day-table' key={dayNumber}>
                         <Paper elevation={3} className='day-paper'>
                             <Box display="flex" alignItems="center">
